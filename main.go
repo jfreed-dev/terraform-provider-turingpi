@@ -1,7 +1,7 @@
 package main
 
 import (
-	"turingpi/provider"
+	"github.com/jfreed-dev/turingpi-terraform-provider/provider"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/plugin"
