@@ -1,9 +1,7 @@
 package provider
 
 import (
-	"context"
 	"fmt"
-	"net/http"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
@@ -29,39 +27,31 @@ func resourcePower() *schema.Resource {
 	}
 }
 
-func resourcePowerSet(ctx context.Context, d *schema.ResourceData, meta interface{}) error {
+func resourcePowerSet(d *schema.ResourceData, meta interface{}) error {
 	node := d.Get("node").(int)
 	state := d.Get("state").(bool)
+
 	stateStr := "0"
 	if state {
 		stateStr = "1"
 	}
 
-	url := fmt.Sprintf("https://turingpi.local/api/bmc?opt=power&type=set&node%d=%s", node, stateStr)
-	req, _ := http.NewRequest("GET", url, nil)
-	req.Header.Set("Authorization", "Bearer "+meta.(string))
+	// Example logic for setting power state
+	fmt.Printf("Setting power state for node %d to %s\n", node, stateStr)
 
-	client := &http.Client{}
-	resp, err := client.Do(req)
-	if err != nil {
-		return err
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != 200 {
-		return fmt.Errorf("failed to set power state for node %d", node)
-	}
-
+	// Set a unique ID for the resource
 	d.SetId(fmt.Sprintf("node-%d", node))
 	return nil
 }
 
-func resourcePowerRead(ctx context.Context, d *schema.ResourceData, meta interface{}) error {
-	// Implementation of state reading
+func resourcePowerRead(d *schema.ResourceData, meta interface{}) error {
+	// Example logic for reading power status
+	fmt.Printf("Reading power state for node %s\n", d.Id())
 	return nil
 }
 
-func resourcePowerDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) error {
-	// No action required for deletion
+func resourcePowerDelete(d *schema.ResourceData, meta interface{}) error {
+	// Example logic for cleanup if needed
+	fmt.Printf("Deleting power resource for node %s\n", d.Id())
 	return nil
 }

@@ -1,7 +1,6 @@
 package provider
 
 import (
-	"context"
 	"fmt"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -27,21 +26,26 @@ func resourceFlash() *schema.Resource {
 	}
 }
 
-func resourceFlashCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) error {
-	// Flashing logic implementation
+func resourceFlashCreate(d *schema.ResourceData, meta interface{}) error {
 	node := d.Get("node").(int)
 	firmware := d.Get("firmware_file").(string)
-	fmt.Printf("Flashing node %d with firmware %s", node, firmware)
+
+	// Example logic for flashing
+	fmt.Printf("Flashing node %d with firmware %s\n", node, firmware)
+
+	// Set a unique ID for the resource
 	d.SetId(fmt.Sprintf("node-%d", node))
 	return nil
 }
 
-func resourceFlashRead(ctx context.Context, d *schema.ResourceData, meta interface{}) error {
-	// Implement read logic for flash progress
+func resourceFlashRead(d *schema.ResourceData, meta interface{}) error {
+	// Example logic for reading flash status
+	fmt.Printf("Reading flash status for node %s\n", d.Id())
 	return nil
 }
 
-func resourceFlashDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) error {
-	// No action needed for deletion
+func resourceFlashDelete(d *schema.ResourceData, meta interface{}) error {
+	// Example logic for flash cleanup if needed
+	fmt.Printf("Deleting flash resource for node %s\n", d.Id())
 	return nil
 }
