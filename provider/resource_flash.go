@@ -11,19 +11,19 @@ func resourceFlash() *schema.Resource {
 		Create: resourceFlashCreate,
 		Read:   resourceFlashRead,
 		Delete: resourceFlashDelete,
-		// No Update function provided, so ForceNew is mandatory for fields that require resource recreation
+		// No Update function provided, so ForceNew is required for mutable fields
 		Schema: map[string]*schema.Schema{
 			"node": {
 				Type:        schema.TypeInt,
 				Required:    true,
 				Description: "Node ID to flash firmware",
-				ForceNew:    true, // Ensures the resource is recreated if this field changes
+				ForceNew:    true, // Ensure resource is recreated if this field changes
 			},
 			"firmware_file": {
 				Type:        schema.TypeString,
 				Required:    true,
 				Description: "Path to the firmware file",
-				ForceNew:    true, // Ensures the resource is recreated if this field changes
+				ForceNew:    true, // Ensure resource is recreated if this field changes
 			},
 		},
 	}
