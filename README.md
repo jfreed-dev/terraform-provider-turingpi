@@ -117,6 +117,65 @@ A Terraform provider for managing Turing Pi's Bare Metal Controller (BMC). This 
 
 ---
 
+## Security Considerations
+
+### To avoid exposing sensitive credentials directly in your Terraform configuration files:
+
+1. ***Use Environment Variables:*** Terraform supports environment variables for sensitive provider configurations. You can set `TURINGPI_USERNAME` and `TURINGPI_PASSWORD` in your shell environment:
+
+   ```bash
+   export TURINGPI_USERNAME=root
+   export TURINGPI_PASSWORD=turing
+
+***Update*** the provider block to use environment variables:
+
+   ```hcl
+   provider "turingpi" {}
+
+2. Use a `.tfvars` File: Store credentials in a separate `.tfvars` file:
+
+   ```plaintext
+   username = "root"
+   password = "turing"
+
+Reference the `.tfvars` file in your Terraform commands:
+
+   ```bash
+   terraform apply -var-file="credentials.tfvars"
+
+---
+
+## Terraform Example
+
+Here’s a complete example of a Terraform configuration using the Turing Pi provider:
+
+   ```hcl
+   terraform {
+     required_providers {
+       turingpi = {
+         source  = "local/turingpi/turingpi"
+         version = "1.0.0"
+       }
+     }
+   }
+
+   provider "turingpi" {
+     username = "root"      # Replace with your BMC username
+     password = "turing"    # Replace with your BMC password
+   }
+
+   resource "turingpi_power" "node1" {
+     node  = 1
+     state = true           # Turn on power for node 1
+   }
+
+   resource "turingpi_flash" "node1" {
+     node          = 1
+     firmware_file = "/path/to/firmware.img"
+   }
+
+---
+
 ## Contributing
 
 Contributions are welcome! Feel free to fork this repository, make changes, and submit a pull request.
