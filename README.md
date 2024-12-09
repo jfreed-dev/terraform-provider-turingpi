@@ -183,13 +183,3 @@ Here’s a complete example of a Terraform configuration using the Turing Pi pro
      firmware_file = "/path/to/firmware.img"
    }
    ```
-
----
-
-## Contributing
-
-Contributions are welcome! Feel free to fork this repository, make changes, and submit a pull request.
-
-## License
-
-This project is licensed under the MIT License. [MIT License](https://mit-license.org/).
