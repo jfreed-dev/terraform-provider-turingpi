@@ -31,16 +31,19 @@ A Terraform provider for managing Turing Pi's Bare Metal Controller (BMC). This 
    ```bash
    git clone https://github.com/jfreed-dev/turingpi-terraform-provider.git
    cd terraform-provider-turingpi
+   ```
 
 2. Initialize the Go module:
 
    ```bash
    go mod tidy
+   ```
 
 3. Build the binary:
 
    ```bash
    go build -o terraform-provider-turingpi
+   ```
 
 ---
 
@@ -52,11 +55,13 @@ A Terraform provider for managing Turing Pi's Bare Metal Controller (BMC). This 
 
    ```bash
    mkdir -p ~/.terraform.d/plugins/local/turingpi/turingpi/1.0.0/linux_amd64/
+   ```
 
 2. Move the binary to the plugin directory:
 
    ```bash
    mv terraform-provider-turingpi ~/.terraform.d/plugins/local/turingpi/turingpi/1.0.0/linux_amd64/
+   ```
 
 ### For Windows:
 
@@ -64,11 +69,13 @@ A Terraform provider for managing Turing Pi's Bare Metal Controller (BMC). This 
 
    ```cmd
    mkdir -p %APPDATA%\terraform.d\plugins\local\turingpi\turingpi\1.0.0\windows_amd64\
+   ```
 
 2. Move the binary to the plugin directory:
 
    ```cmd
    move terraform-provider-turingpi.exe %APPDATA%\terraform.d\plugins\local\turingpi\turingpi\1.0.0\windows_amd64\
+   ```
 
 ---
 ## Using the Provider
@@ -90,16 +97,19 @@ A Terraform provider for managing Turing Pi's Bare Metal Controller (BMC). This 
     username = "your-username"
     password = "your-password"
    }
+   ```
 
 2. Initialize Terraform:
 
    ```bash
    terraform init
+   ```
 
 3. Apply Your Configuration:
 
    ```bash
    terraform apply
+   ```
 
 ---
 ## Debugging During Development
@@ -108,12 +118,14 @@ A Terraform provider for managing Turing Pi's Bare Metal Controller (BMC). This 
 
    ```bash
    go run main.go
+   ```
 
 2. Enable verbose logs during Terraform runs:
 
    ```bash
    export TF_LOG=DEBUG
    terraform apply
+   ```
 
 ---
 
@@ -126,28 +138,31 @@ A Terraform provider for managing Turing Pi's Bare Metal Controller (BMC). This 
    ```bash
    export TURINGPI_USERNAME=root
    export TURINGPI_PASSWORD=turing
-
-  **Update** the provider block to use environment variables:
+   ```
+   
+   **Update** the provider block to use environment variables:
 
    ```hcl
    provider "turingpi" {}
+   ```
 
 2. Use a `.tfvars` File: Store credentials in a separate `.tfvars` file:
 
    ```plaintext
    username = "root"
    password = "turing"
+   ```
 
-Reference the `.tfvars` file in your Terraform commands:
+   Reference the `.tfvars` file in your Terraform commands:
 
    ```bash
    terraform apply -var-file="credentials.tfvars"
-
+   ```
 ---
 
 ## Terraform Example
 
-Here’s a complete example of a Terraform configuration using the Turing Pi provider:
+### Here’s a complete example of a Terraform configuration using the Turing Pi provider:
 
    ```hcl
    terraform {
@@ -173,6 +188,7 @@ Here’s a complete example of a Terraform configuration using the Turing Pi pro
      node          = 1
      firmware_file = "/path/to/firmware.img"
    }
+   ```
 
 ---
 
