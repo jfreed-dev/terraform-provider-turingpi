@@ -13,14 +13,10 @@ A Terraform provider for managing Turing Pi's Baseboard Management Controller (B
 - **Firmware Management**: Flash firmware to individual nodes.
 - **Node Interaction**: Communicate with nodes via the Turing Pi BMC API.
 
----
-
 ## Prerequisites
 
 1. **Go Installation**: Install Go from the [official Go website](https://go.dev/).
 2. **Terraform**: Install Terraform from the [official Terraform website](https://www.terraform.io/).
-
----
 
 ## Building the Plugin
 
@@ -44,8 +40,6 @@ A Terraform provider for managing Turing Pi's Baseboard Management Controller (B
    ```bash
    go build -o terraform-provider-turingpi
    ```
-
----
 
 ## Installation
 
@@ -76,8 +70,8 @@ A Terraform provider for managing Turing Pi's Baseboard Management Controller (B
    ```cmd
    move terraform-provider-turingpi.exe %APPDATA%\terraform.d\plugins\local\turingpi\turingpi\1.0.0\windows_amd64\
    ```
-
 ---
+
 ## Using the Provider
 
 1. Define the Provider in Terraform Configuration
@@ -112,6 +106,7 @@ A Terraform provider for managing Turing Pi's Baseboard Management Controller (B
    ```
 
 ---
+
 ## Debugging During Development
 
 1. Use `go run` to quickly test changes:
@@ -158,7 +153,6 @@ To avoid exposing sensitive credentials directly in your Terraform configuration
    ```bash
    terraform apply -var-file="credentials.tfvars"
    ```
----
 
 ## Terraform Example
 
@@ -195,8 +189,6 @@ Here’s a complete example of a Terraform configuration using the Turing Pi pro
 ## Contributing
 
 Contributions are welcome! Feel free to fork this repository, make changes, and submit a pull request.
-
----
 
 ## License
 
