@@ -30,7 +30,7 @@ To build the Terraform provider:
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/yourusername/terraform-provider-turingpi.git
+   git clone https://github.com/jfreed-dev/turingpi-terraform-provider.git
    cd terraform-provider-turingpi
 
 2. Initialize the Go module:
