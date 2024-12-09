@@ -1,6 +1,6 @@
 # Terraform Provider for Turing Pi 2.5
 
-A Terraform provider for managing Turing Pi's Bare Metal Controller (BMC). This plugin enables you to interact with Turing Pi's BMC API, allowing you to:
+A Terraform provider for managing Turing Pi's Baseboard Management Controller (BMC). This plugin enables you to interact with Turing Pi's BMC API, allowing you to:
 
 - Authenticate with the BMC.
 - Control power for specific nodes.
