@@ -19,13 +19,12 @@ A Terraform provider for managing Turing Pi's Bare Metal Controller (BMC). This 
 
 1. **Go Installation**: Install Go from the [official Go website](https://go.dev/).
 2. **Terraform**: Install Terraform from the [official Terraform website](https://www.terraform.io/).
-3. **Git**: Install Git for version control.
 
 ---
 
 ## Building the Plugin
 
-To build the Terraform provider:
+### To build the Terraform provider:
 
 1. Clone the repository:
 
