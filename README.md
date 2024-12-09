@@ -25,7 +25,7 @@ A Terraform provider for managing Turing Pi's Baseboard Management Controller (B
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/jfreed-dev/turingpi-terraform-provider.git
+   git clone https://github.com/jfreed-dev/terraform-provider-turingpi.git
    cd terraform-provider-turingpi
    ```
 
