@@ -68,6 +68,7 @@ A Terraform provider for managing Turing Pi's Baseboard Management Controller (B
 2. Move the binary to the plugin directory:
 
    ```cmd
+   move terraform-provider-turingpi terraform-provider-turingpi.exe
    move terraform-provider-turingpi.exe %APPDATA%\terraform.d\plugins\local\turingpi\turingpi\1.0.0\windows_amd64\
    ```
 ---
