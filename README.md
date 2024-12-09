@@ -88,8 +88,8 @@ A Terraform provider for managing Turing Pi's Baseboard Management Controller (B
    }
 
    provider "turingpi" {
-    username = "your-username"
-    password = "your-password"
+     username = "your-username"
+     password = "your-password"
    }
    ```
 
