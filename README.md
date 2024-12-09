@@ -131,7 +131,7 @@ A Terraform provider for managing Turing Pi's Bare Metal Controller (BMC). This 
 
 ## Security Considerations
 
-### To avoid exposing sensitive credentials directly in your Terraform configuration files:
+To avoid exposing sensitive credentials directly in your Terraform configuration files:
 
 1. **Use Environment Variables:** Terraform supports environment variables for sensitive provider configurations. You can set `TURINGPI_USERNAME` and `TURINGPI_PASSWORD` in your shell environment:
 
@@ -162,7 +162,7 @@ A Terraform provider for managing Turing Pi's Bare Metal Controller (BMC). This 
 
 ## Terraform Example
 
-### Here’s a complete example of a Terraform configuration using the Turing Pi provider:
+Here’s a complete example of a Terraform configuration using the Turing Pi provider:
 
    ```hcl
    terraform {
