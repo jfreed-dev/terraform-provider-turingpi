@@ -20,8 +20,8 @@ func Provider() *schema.Provider {
 		},
 		ResourcesMap: map[string]*schema.Resource{
 			"turingpi_power": resourcePower(),
-			"turingpi_flash": resourceFlash(),
-			"turingpi_node":  resourceNode(), // Add this resource
+			"turingpi_flash": resourceFlash(), // Register the flash resource
+			"turingpi_node":  resourceNode(),
 		},
 	}
 }
