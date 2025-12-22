@@ -1,5 +1,9 @@
 # Terraform Provider for Turing Pi 2.5
 
+[![Go](https://github.com/jfreed-dev/terraform-provider-turingpi/actions/workflows/go.yml/badge.svg)](https://github.com/jfreed-dev/terraform-provider-turingpi/actions/workflows/go.yml)
+[![Release](https://img.shields.io/github/v/release/jfreed-dev/terraform-provider-turingpi)](https://github.com/jfreed-dev/terraform-provider-turingpi/releases/latest)
+[![License](https://img.shields.io/github/license/jfreed-dev/terraform-provider-turingpi)](LICENSE)
+
 A Terraform provider for managing Turing Pi's Baseboard Management Controller (BMC), enabling power management, firmware flashing, and node provisioning.
 
 ## Prerequisites
