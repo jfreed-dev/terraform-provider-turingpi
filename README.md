@@ -18,7 +18,7 @@ terraform {
   required_providers {
     turingpi = {
       source  = "jfreed-dev/turingpi"
-      version = "1.0.3"
+      version = "1.0.4"
     }
   }
 }
@@ -27,6 +27,7 @@ provider "turingpi" {
   username = "root"                      # or TURINGPI_USERNAME env var
   password = "turing"                    # or TURINGPI_PASSWORD env var
   endpoint = "https://turingpi.local"    # or TURINGPI_ENDPOINT env var (optional)
+  insecure = false                       # or TURINGPI_INSECURE env var (optional)
 }
 ```
 
@@ -36,6 +37,7 @@ Using environment variables:
 export TURINGPI_USERNAME=root
 export TURINGPI_PASSWORD=turing
 export TURINGPI_ENDPOINT=https://192.168.1.100  # optional
+export TURINGPI_INSECURE=true                   # optional, for self-signed/expired certs
 ```
 
 ```hcl

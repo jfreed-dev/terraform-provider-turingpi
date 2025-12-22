@@ -8,6 +8,8 @@ import (
 	"time"
 )
 
+// Note: Uses HTTPClient from provider.go for TLS configuration
+
 func checkPowerStatus(node int) string {
 	// Simulate checking power status
 	fmt.Printf("Checking power status for node %d\n", node)
@@ -32,7 +34,6 @@ func flashNode(node int, firmware string) {
 
 func checkBootStatus(endpoint string, node int, timeout int, token string) (bool, error) {
 	url := fmt.Sprintf("%s/api/bmc?opt=get&type=uart&node=%d", endpoint, node)
-	client := &http.Client{}
 
 	deadline := time.Now().Add(time.Duration(timeout) * time.Second)
 
@@ -43,7 +44,7 @@ func checkBootStatus(endpoint string, node int, timeout int, token string) (bool
 		}
 
 		req.Header.Set("Authorization", "Bearer "+token)
-		resp, err := client.Do(req)
+		resp, err := HTTPClient.Do(req)
 		if err != nil {
 			return false, fmt.Errorf("UART request failed: %v", err)
 		}
