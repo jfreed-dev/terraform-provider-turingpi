@@ -74,19 +74,23 @@ func TestResourceFlash_ForceNewFields(t *testing.T) {
 func TestResourceFlash_HasCRUDFunctions(t *testing.T) {
 	r := resourceFlash()
 
+	//nolint:staticcheck // SA1019: intentionally testing deprecated Create field
 	if r.Create == nil {
 		t.Error("resource should have Create function")
 	}
 
+	//nolint:staticcheck // SA1019: intentionally testing deprecated Read field
 	if r.Read == nil {
 		t.Error("resource should have Read function")
 	}
 
 	// Flash resource should NOT have Update (uses ForceNew instead)
+	//nolint:staticcheck // SA1019: intentionally testing deprecated Update field
 	if r.Update != nil {
 		t.Error("resource should NOT have Update function (uses ForceNew)")
 	}
 
+	//nolint:staticcheck // SA1019: intentionally testing deprecated Delete field
 	if r.Delete == nil {
 		t.Error("resource should have Delete function")
 	}
@@ -96,8 +100,8 @@ func TestResourceFlashCreate_SetsId(t *testing.T) {
 	r := resourceFlash()
 	d := r.TestResourceData()
 
-	d.Set("node", 1)
-	d.Set("firmware_file", "/path/to/firmware.img")
+	_ = d.Set("node", 1)
+	_ = d.Set("firmware_file", "/path/to/firmware.img")
 
 	err := resourceFlashCreate(d, nil)
 	if err != nil {
@@ -126,8 +130,8 @@ func TestResourceFlashCreate_DifferentNodes(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.expectedId, func(t *testing.T) {
 			d := r.TestResourceData()
-			d.Set("node", tc.node)
-			d.Set("firmware_file", "/path/to/firmware.img")
+			_ = d.Set("node", tc.node)
+			_ = d.Set("firmware_file", "/path/to/firmware.img")
 
 			err := resourceFlashCreate(d, nil)
 			if err != nil {
@@ -153,8 +157,8 @@ func TestResourceFlashCreate_DifferentFirmwareFiles(t *testing.T) {
 	for _, firmware := range firmwareFiles {
 		t.Run(firmware, func(t *testing.T) {
 			d := r.TestResourceData()
-			d.Set("node", 1)
-			d.Set("firmware_file", firmware)
+			_ = d.Set("node", 1)
+			_ = d.Set("firmware_file", firmware)
 
 			err := resourceFlashCreate(d, nil)
 			if err != nil {

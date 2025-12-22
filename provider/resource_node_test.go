@@ -103,18 +103,22 @@ func TestResourceNode_DefaultValues(t *testing.T) {
 func TestResourceNode_HasCRUDFunctions(t *testing.T) {
 	r := resourceNode()
 
+	//nolint:staticcheck // SA1019: intentionally testing deprecated Create field
 	if r.Create == nil {
 		t.Error("resource should have Create function")
 	}
 
+	//nolint:staticcheck // SA1019: intentionally testing deprecated Read field
 	if r.Read == nil {
 		t.Error("resource should have Read function")
 	}
 
+	//nolint:staticcheck // SA1019: intentionally testing deprecated Update field
 	if r.Update == nil {
 		t.Error("resource should have Update function")
 	}
 
+	//nolint:staticcheck // SA1019: intentionally testing deprecated Delete field
 	if r.Delete == nil {
 		t.Error("resource should have Delete function")
 	}
@@ -124,9 +128,9 @@ func TestResourceNodeProvision_SetsId(t *testing.T) {
 	r := resourceNode()
 	d := r.TestResourceData()
 
-	d.Set("node", 1)
-	d.Set("power_state", "on")
-	d.Set("boot_check", false)
+	_ = d.Set("node", 1)
+	_ = d.Set("power_state", "on")
+	_ = d.Set("boot_check", false)
 
 	config := &ProviderConfig{
 		Token:    "test-token",
@@ -165,9 +169,9 @@ func TestResourceNodeProvision_DifferentNodes(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.expectedId, func(t *testing.T) {
 			d := r.TestResourceData()
-			d.Set("node", tc.node)
-			d.Set("power_state", "on")
-			d.Set("boot_check", false)
+			_ = d.Set("node", tc.node)
+			_ = d.Set("power_state", "on")
+			_ = d.Set("boot_check", false)
 
 			err := resourceNodeProvision(d, config)
 			if err != nil {
@@ -185,9 +189,9 @@ func TestResourceNodeProvision_PowerStateOn(t *testing.T) {
 	r := resourceNode()
 	d := r.TestResourceData()
 
-	d.Set("node", 1)
-	d.Set("power_state", "on")
-	d.Set("boot_check", false)
+	_ = d.Set("node", 1)
+	_ = d.Set("power_state", "on")
+	_ = d.Set("boot_check", false)
 
 	config := &ProviderConfig{
 		Token:    "test-token",
@@ -204,9 +208,9 @@ func TestResourceNodeProvision_PowerStateOff(t *testing.T) {
 	r := resourceNode()
 	d := r.TestResourceData()
 
-	d.Set("node", 1)
-	d.Set("power_state", "off")
-	d.Set("boot_check", false)
+	_ = d.Set("node", 1)
+	_ = d.Set("power_state", "off")
+	_ = d.Set("boot_check", false)
 
 	config := &ProviderConfig{
 		Token:    "test-token",
@@ -223,10 +227,10 @@ func TestResourceNodeProvision_WithFirmware(t *testing.T) {
 	r := resourceNode()
 	d := r.TestResourceData()
 
-	d.Set("node", 1)
-	d.Set("firmware_file", "/path/to/firmware.img")
-	d.Set("power_state", "on")
-	d.Set("boot_check", false)
+	_ = d.Set("node", 1)
+	_ = d.Set("firmware_file", "/path/to/firmware.img")
+	_ = d.Set("power_state", "on")
+	_ = d.Set("boot_check", false)
 
 	config := &ProviderConfig{
 		Token:    "test-token",
@@ -243,17 +247,17 @@ func TestResourceNodeProvision_WithBootCheck(t *testing.T) {
 	// Create mock server that returns login prompt
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte("Boot complete\nlogin:"))
+		_, _ = w.Write([]byte("Boot complete\nlogin:"))
 	}))
 	defer server.Close()
 
 	r := resourceNode()
 	d := r.TestResourceData()
 
-	d.Set("node", 1)
-	d.Set("power_state", "on")
-	d.Set("boot_check", true)
-	d.Set("login_prompt_timeout", 1)
+	_ = d.Set("node", 1)
+	_ = d.Set("power_state", "on")
+	_ = d.Set("boot_check", true)
+	_ = d.Set("login_prompt_timeout", 1)
 
 	config := &ProviderConfig{
 		Token:    "test-token",
@@ -270,17 +274,17 @@ func TestResourceNodeProvision_BootCheckTimeout(t *testing.T) {
 	// Create mock server that never returns login prompt
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte("Still booting..."))
+		_, _ = w.Write([]byte("Still booting..."))
 	}))
 	defer server.Close()
 
 	r := resourceNode()
 	d := r.TestResourceData()
 
-	d.Set("node", 1)
-	d.Set("power_state", "on")
-	d.Set("boot_check", true)
-	d.Set("login_prompt_timeout", 1)
+	_ = d.Set("node", 1)
+	_ = d.Set("power_state", "on")
+	_ = d.Set("boot_check", true)
+	_ = d.Set("login_prompt_timeout", 1)
 
 	config := &ProviderConfig{
 		Token:    "test-token",
@@ -297,7 +301,7 @@ func TestResourceNodeStatus_SetsPowerState(t *testing.T) {
 	r := resourceNode()
 	d := r.TestResourceData()
 
-	d.Set("node", 1)
+	_ = d.Set("node", 1)
 	d.SetId("node-1")
 
 	err := resourceNodeStatus(d, nil)
@@ -316,7 +320,7 @@ func TestResourceNodeDelete_TurnsOffNode(t *testing.T) {
 	r := resourceNode()
 	d := r.TestResourceData()
 
-	d.Set("node", 1)
+	_ = d.Set("node", 1)
 	d.SetId("node-1")
 
 	err := resourceNodeDelete(d, nil)
@@ -333,7 +337,7 @@ func TestResourceNodeDelete_DifferentNodes(t *testing.T) {
 	for _, node := range nodes {
 		t.Run("node_"+string(rune('0'+node)), func(t *testing.T) {
 			d := r.TestResourceData()
-			d.Set("node", node)
+			_ = d.Set("node", node)
 			d.SetId("node-" + string(rune('0'+node)))
 
 			err := resourceNodeDelete(d, nil)

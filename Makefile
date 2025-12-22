@@ -22,7 +22,7 @@ test-cover:
 	go tool cover -html=coverage.out -o coverage.html
 
 lint:
-	golangci-lint run
+	go run github.com/golangci/golangci-lint/cmd/golangci-lint@latest run
 
 fmt:
 	go fmt ./...

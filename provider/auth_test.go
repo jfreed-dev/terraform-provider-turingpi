@@ -30,7 +30,7 @@ func TestAuthenticate_Success(t *testing.T) {
 		// Verify request body
 		body, _ := io.ReadAll(r.Body)
 		var reqData map[string]string
-		json.Unmarshal(body, &reqData)
+		_ = json.Unmarshal(body, &reqData)
 
 		if reqData["username"] != "testuser" {
 			t.Errorf("expected username 'testuser', got %s", reqData["username"])
@@ -41,7 +41,7 @@ func TestAuthenticate_Success(t *testing.T) {
 
 		// Return success response
 		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(map[string]string{"id": expectedToken})
+		_ = json.NewEncoder(w).Encode(map[string]string{"id": expectedToken})
 	}))
 	defer server.Close()
 
@@ -117,7 +117,7 @@ func TestAuthenticate_ConnectionError(t *testing.T) {
 func TestAuthenticate_EmptyToken(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(map[string]string{})
+		_ = json.NewEncoder(w).Encode(map[string]string{})
 	}))
 	defer server.Close()
 
@@ -151,11 +151,11 @@ func TestAuthenticate_EndpointURLConstruction(t *testing.T) {
 			server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				capturedPath = r.URL.Path
 				w.WriteHeader(http.StatusOK)
-				json.NewEncoder(w).Encode(map[string]string{"id": "token"})
+				_ = json.NewEncoder(w).Encode(map[string]string{"id": "token"})
 			}))
 			defer server.Close()
 
-			authenticate(server.URL, "user", "pass")
+			_, _ = authenticate(server.URL, "user", "pass")
 
 			if capturedPath != tt.wantPath {
 				t.Errorf("expected path %s, got %s", tt.wantPath, capturedPath)

@@ -2,7 +2,7 @@ package provider
 
 import (
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"strings"
 	"time"
@@ -49,7 +49,7 @@ func checkBootStatus(endpoint string, node int, timeout int, token string) (bool
 		}
 
 		defer resp.Body.Close()
-		body, err := ioutil.ReadAll(resp.Body)
+		body, err := io.ReadAll(resp.Body)
 		if err != nil {
 			return false, fmt.Errorf("failed to read UART response: %v", err)
 		}

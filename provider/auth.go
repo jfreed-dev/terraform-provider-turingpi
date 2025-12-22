@@ -23,6 +23,8 @@ func authenticate(endpoint, username, password string) (string, error) {
 	}
 
 	var result map[string]string
-	json.NewDecoder(resp.Body).Decode(&result)
+	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
+		return "", fmt.Errorf("failed to decode authentication response: %v", err)
+	}
 	return result["id"], nil
 }
