@@ -30,8 +30,8 @@ func flashNode(node int, firmware string) {
 	// Replace this with an API call to flash the firmware
 }
 
-func checkBootStatus(node int, timeout int, token string) (bool, error) {
-	url := fmt.Sprintf("https://turingpi.local/api/bmc?opt=get&type=uart&node=%d", node)
+func checkBootStatus(endpoint string, node int, timeout int, token string) (bool, error) {
+	url := fmt.Sprintf("%s/api/bmc?opt=get&type=uart&node=%d", endpoint, node)
 	client := &http.Client{}
 
 	deadline := time.Now().Add(time.Duration(timeout) * time.Second)

@@ -7,8 +7,8 @@ import (
 	"net/http"
 )
 
-func authenticate(username, password string) (string, error) {
-	url := "https://turingpi.local/api/bmc/authenticate"
+func authenticate(endpoint, username, password string) (string, error) {
+	url := fmt.Sprintf("%s/api/bmc/authenticate", endpoint)
 	data := map[string]string{"username": username, "password": password}
 	jsonData, _ := json.Marshal(data)
 
