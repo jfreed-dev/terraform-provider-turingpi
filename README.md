@@ -1,189 +1,112 @@
 # Terraform Provider for Turing Pi 2.5
 
-A Terraform provider for managing Turing Pi's Baseboard Management Controller (BMC). This plugin enables you to interact with Turing Pi's BMC API, allowing you to:
-
-- Authenticate with the BMC.
-- Control power for specific nodes.
-- Flash firmware to nodes.
-- Retrieve system and node statuses.
-
-## Features
-
-- **Power Management**: Turn nodes on/off and check power status.
-- **Firmware Management**: Flash firmware to individual nodes.
-- **Node Interaction**: Communicate with nodes via the Turing Pi BMC API.
+A Terraform provider for managing Turing Pi's Baseboard Management Controller (BMC), enabling power management, firmware flashing, and node provisioning.
 
 ## Prerequisites
 
-1. **Go Installation**: Install Go from the [official Go website](https://go.dev/).
-2. **Terraform**: Install Terraform from the [official Terraform website](https://www.terraform.io/).
+- [Go 1.23+](https://go.dev/)
+- [Terraform](https://www.terraform.io/)
 
-## Building the Plugin
+## Building & Installation
 
-### To build the Terraform provider:
+```bash
+# Clone and build
+git clone https://github.com/jfreed-dev/terraform-provider-turingpi.git
+cd terraform-provider-turingpi
+go build -o terraform-provider-turingpi
 
-1. Clone the repository:
+# Install (Linux/macOS)
+mkdir -p ~/.terraform.d/plugins/local/turingpi/turingpi/1.0.0/linux_amd64/
+mv terraform-provider-turingpi ~/.terraform.d/plugins/local/turingpi/turingpi/1.0.0/linux_amd64/
 
-   ```bash
-   git clone https://github.com/jfreed-dev/terraform-provider-turingpi.git
-   cd terraform-provider-turingpi
-   ```
+# Install (Windows)
+mkdir %APPDATA%\terraform.d\plugins\local\turingpi\turingpi\1.0.0\windows_amd64\
+move terraform-provider-turingpi.exe %APPDATA%\terraform.d\plugins\local\turingpi\turingpi\1.0.0\windows_amd64\
+```
 
-2. Initialize the Go module:
+## Provider Configuration
 
-   ```bash
-   go mod tidy
-   ```
-
-3. Build the binary:
-
-   ```bash
-   go build -o terraform-provider-turingpi
-   ```
-
-## Installation
-
-### For Linux/macOS:
-
-1. Create the plugin directory:
-
-   ```bash
-   mkdir -p ~/.terraform.d/plugins/local/turingpi/turingpi/1.0.0/linux_amd64/
-   ```
-
-2. Move the binary to the plugin directory:
-
-   ```bash
-   mv terraform-provider-turingpi ~/.terraform.d/plugins/local/turingpi/turingpi/1.0.0/linux_amd64/
-   ```
-
-### For Windows:
-
-1. Create the plugin directory:
-
-   ```cmd
-   mkdir -p %APPDATA%\terraform.d\plugins\local\turingpi\turingpi\1.0.0\windows_amd64\
-   ```
-
-2. Move the binary to the plugin directory:
-
-   ```cmd
-   move terraform-provider-turingpi terraform-provider-turingpi.exe
-   move terraform-provider-turingpi.exe %APPDATA%\terraform.d\plugins\local\turingpi\turingpi\1.0.0\windows_amd64\
-   ```
----
-
-## Using the Provider
-
-1. Define the Provider in Terraform Configuration
-   Create a `main.tf` file with the following content:
-
-   ```hcl
-   terraform {
-     required_providers {
-       turingpi = {
-         source  = "local/turingpi/turingpi"
-         version = "1.0.0"
-     }
+```hcl
+terraform {
+  required_providers {
+    turingpi = {
+      source  = "local/turingpi/turingpi"
+      version = "1.0.0"
     }
-   }
+  }
+}
 
-   provider "turingpi" {
-     username = "your-username"
-     password = "your-password"
-     endpoint = "https://turingpi.local"  # Optional, defaults to https://turingpi.local
-   }
-   ```
+provider "turingpi" {
+  username = "root"                      # or TURINGPI_USERNAME env var
+  password = "turing"                    # or TURINGPI_PASSWORD env var
+  endpoint = "https://turingpi.local"    # or TURINGPI_ENDPOINT env var (optional)
+}
+```
 
-2. Initialize Terraform:
+Using environment variables:
 
-   ```bash
-   terraform init
-   ```
+```bash
+export TURINGPI_USERNAME=root
+export TURINGPI_PASSWORD=turing
+export TURINGPI_ENDPOINT=https://192.168.1.100  # optional
+```
 
-3. Apply Your Configuration:
+```hcl
+provider "turingpi" {}
+```
 
-   ```bash
-   terraform apply
-   ```
+## Resources
 
----
+### turingpi_power
 
-## Debugging During Development
+Control node power state.
 
-1. Use `go run` to quickly test changes:
+```hcl
+resource "turingpi_power" "node1" {
+  node  = 1       # Node ID (1-4)
+  state = true    # true = on, false = off
+}
+```
 
-   ```bash
-   go run main.go
-   ```
+### turingpi_flash
 
-2. Enable verbose logs during Terraform runs:
+Flash firmware to a node. Changes to `node` or `firmware_file` trigger resource recreation.
 
-   ```bash
-   export TF_LOG=DEBUG
-   terraform apply
-   ```
+```hcl
+resource "turingpi_flash" "node1" {
+  node          = 1
+  firmware_file = "/path/to/firmware.img"
+}
+```
 
----
+### turingpi_node
 
-## Security Considerations
+Comprehensive node management: power control, firmware flashing, and boot verification.
 
-To avoid exposing sensitive credentials directly in your Terraform configuration files:
+```hcl
+resource "turingpi_node" "node1" {
+  node                 = 1                        # Node ID (1-4)
+  power_state          = "on"                     # "on" or "off" (default: "on")
+  firmware_file        = "/path/to/firmware.img"  # optional
+  boot_check           = true                     # Monitor UART for login prompt (default: false)
+  login_prompt_timeout = 120                      # Timeout in seconds (default: 60)
+}
+```
 
-1. **Use Environment Variables:** Terraform supports environment variables for provider configurations. You can set `TURINGPI_USERNAME`, `TURINGPI_PASSWORD`, and optionally `TURINGPI_ENDPOINT` in your shell environment:
+## Development
 
-   ```bash
-   export TURINGPI_USERNAME=root
-   export TURINGPI_PASSWORD=turing
-   export TURINGPI_ENDPOINT=https://192.168.1.100  # Optional, defaults to https://turingpi.local
-   ```
+```bash
+# Run tests
+go test -v ./...
 
-   **Update** the provider block to use environment variables:
+# Build
+go build -o terraform-provider-turingpi
 
-   ```hcl
-   provider "turingpi" {}
-   ```
+# Enable debug logging
+export TF_LOG=DEBUG
+terraform apply
+```
 
-2. Use a `.tfvars` File: Store credentials in a separate `.tfvars` file:
+## License
 
-   ```plaintext
-   username = "root"
-   password = "turing"
-   ```
-
-   Reference the `.tfvars` file in your Terraform commands:
-
-   ```bash
-   terraform apply -var-file="credentials.tfvars"
-   ```
-
-## Terraform Example
-
-Here’s a complete example of a Terraform configuration using the Turing Pi provider:
-
-   ```hcl
-   terraform {
-     required_providers {
-       turingpi = {
-         source  = "local/turingpi/turingpi"
-         version = "1.0.0"
-       }
-     }
-   }
-
-   provider "turingpi" {
-     username = "root"                       # Replace with your BMC username
-     password = "turing"                     # Replace with your BMC password
-     # endpoint = "https://192.168.1.100"   # Optional: specify BMC IP/hostname (defaults to https://turingpi.local)
-   }
-
-   resource "turingpi_power" "node1" {
-     node  = 1
-     state = true           # Turn on power for node 1
-   }
-
-   resource "turingpi_flash" "node1" {
-     node          = 1
-     firmware_file = "/path/to/firmware.img"
-   }
-   ```
+See [LICENSE](LICENSE) file.
