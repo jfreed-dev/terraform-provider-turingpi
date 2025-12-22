@@ -97,6 +97,14 @@ resource "turingpi_node" "node1" {
 }
 ```
 
+## Examples
+
+See the [examples](./examples) directory for complete configurations:
+
+- [basic](./examples/basic) - Simple power control
+- [flash-firmware](./examples/flash-firmware) - Firmware flashing
+- [full-provisioning](./examples/full-provisioning) - Complete node management with boot verification
+
 ## Development
 
 ```bash
