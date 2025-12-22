@@ -1,6 +1,12 @@
 # Claude Code
 CLAUDE.md
 
+# Go
+terraform-provider-turingpi
+turingpi-terraform-provider
+coverage.out
+coverage.html
+
 # Yarn lock file
 yarn.lock
 
