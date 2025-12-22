@@ -25,7 +25,6 @@ jobs:
         run: go test -v -race ./...
 
       - name: Import GPG key
-        if: ${{ secrets.GPG_PRIVATE_KEY != '' }}
         uses: crazy-max/ghaction-import-gpg@v6
         id: import_gpg
         with:
@@ -33,7 +32,6 @@ jobs:
           passphrase: ${{ secrets.GPG_PASSPHRASE }}
 
       - name: Run GoReleaser (signed)
-        if: ${{ secrets.GPG_PRIVATE_KEY != '' }}
         uses: goreleaser/goreleaser-action@v6
         with:
           distribution: goreleaser
@@ -42,13 +40,3 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GPG_FINGERPRINT: ${{ steps.import_gpg.outputs.fingerprint }}
-
-      - name: Run GoReleaser (unsigned)
-        if: ${{ secrets.GPG_PRIVATE_KEY == '' }}
-        uses: goreleaser/goreleaser-action@v6
-        with:
-          distribution: goreleaser
-          version: '~> v2'
-          args: release --clean
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
