@@ -24,6 +24,7 @@ func TestResourceNode_Schema(t *testing.T) {
 		"power_state",
 		"boot_check",
 		"login_prompt_timeout",
+		"boot_check_pattern",
 	}
 
 	for _, field := range expectedFields {
@@ -45,6 +46,7 @@ func TestResourceNode_SchemaTypes(t *testing.T) {
 		{"power_state", schema.TypeString},
 		{"boot_check", schema.TypeBool},
 		{"login_prompt_timeout", schema.TypeInt},
+		{"boot_check_pattern", schema.TypeString},
 	}
 
 	for _, tt := range tests {
@@ -72,6 +74,7 @@ func TestResourceNode_OptionalFields(t *testing.T) {
 		"power_state",
 		"boot_check",
 		"login_prompt_timeout",
+		"boot_check_pattern",
 	}
 
 	for _, field := range optionalFields {
@@ -97,6 +100,11 @@ func TestResourceNode_DefaultValues(t *testing.T) {
 	// login_prompt_timeout defaults to 60
 	if r.Schema["login_prompt_timeout"].Default != 60 {
 		t.Errorf("login_prompt_timeout should default to 60, got %v", r.Schema["login_prompt_timeout"].Default)
+	}
+
+	// boot_check_pattern defaults to "login:"
+	if r.Schema["boot_check_pattern"].Default != "login:" {
+		t.Errorf("boot_check_pattern should default to 'login:', got %v", r.Schema["boot_check_pattern"].Default)
 	}
 }
 
@@ -258,6 +266,7 @@ func TestResourceNodeProvision_WithBootCheck(t *testing.T) {
 	_ = d.Set("power_state", "on")
 	_ = d.Set("boot_check", true)
 	_ = d.Set("login_prompt_timeout", 1)
+	_ = d.Set("boot_check_pattern", "login:")
 
 	config := &ProviderConfig{
 		Token:    "test-token",
@@ -285,6 +294,7 @@ func TestResourceNodeProvision_BootCheckTimeout(t *testing.T) {
 	_ = d.Set("power_state", "on")
 	_ = d.Set("boot_check", true)
 	_ = d.Set("login_prompt_timeout", 1)
+	_ = d.Set("boot_check_pattern", "login:")
 
 	config := &ProviderConfig{
 		Token:    "test-token",
@@ -294,6 +304,34 @@ func TestResourceNodeProvision_BootCheckTimeout(t *testing.T) {
 	err := resourceNodeProvision(d, config)
 	if err == nil {
 		t.Fatal("expected error for boot check timeout, got nil")
+	}
+}
+
+func TestResourceNodeProvision_CustomBootCheckPattern(t *testing.T) {
+	// Create mock server that returns Talos boot message
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+		_, _ = w.Write([]byte("[talos] machine is running and ready"))
+	}))
+	defer server.Close()
+
+	r := resourceNode()
+	d := r.TestResourceData()
+
+	_ = d.Set("node", 1)
+	_ = d.Set("power_state", "on")
+	_ = d.Set("boot_check", true)
+	_ = d.Set("login_prompt_timeout", 1)
+	_ = d.Set("boot_check_pattern", "machine is running and ready")
+
+	config := &ProviderConfig{
+		Token:    "test-token",
+		Endpoint: server.URL,
+	}
+
+	err := resourceNodeProvision(d, config)
+	if err != nil {
+		t.Fatalf("unexpected error: %s", err)
 	}
 }
 

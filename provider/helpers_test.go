@@ -94,7 +94,7 @@ func TestCheckBootStatus_Success(t *testing.T) {
 	defer server.Close()
 
 	// Use short timeout since mock server returns immediately
-	success, err := checkBootStatus(server.URL, 1, 1, "test-token")
+	success, err := checkBootStatus(server.URL, 1, 1, "test-token", "login:")
 	if err != nil {
 		t.Fatalf("unexpected error: %s", err)
 	}
@@ -115,7 +115,7 @@ func TestCheckBootStatus_TokenInHeader(t *testing.T) {
 	}))
 	defer server.Close()
 
-	_, _ = checkBootStatus(server.URL, 1, 1, expectedToken)
+	_, _ = checkBootStatus(server.URL, 1, 1, expectedToken, "login:")
 
 	expectedHeader := "Bearer " + expectedToken
 	if capturedAuth != expectedHeader {
@@ -144,7 +144,7 @@ func TestCheckBootStatus_NodeInURL(t *testing.T) {
 			}))
 			defer server.Close()
 
-			_, _ = checkBootStatus(server.URL, tc.node, 1, "token")
+			_, _ = checkBootStatus(server.URL, tc.node, 1, "token", "login:")
 
 			if capturedNode != tc.expectedNode {
 				t.Errorf("expected node=%s in URL, got node=%s", tc.expectedNode, capturedNode)
@@ -163,7 +163,7 @@ func TestCheckBootStatus_Timeout(t *testing.T) {
 
 	// Use very short timeout to speed up test
 	// Note: This test will take at least 1 second due to the timeout
-	success, err := checkBootStatus(server.URL, 1, 1, "token")
+	success, err := checkBootStatus(server.URL, 1, 1, "token", "login:")
 
 	if success {
 		t.Error("expected success=false on timeout")
@@ -180,7 +180,7 @@ func TestCheckBootStatus_Timeout(t *testing.T) {
 
 func TestCheckBootStatus_ConnectionError(t *testing.T) {
 	// Use invalid URL to simulate connection error
-	success, err := checkBootStatus("http://localhost:99999", 1, 1, "token")
+	success, err := checkBootStatus("http://localhost:99999", 1, 1, "token", "login:")
 
 	if success {
 		t.Error("expected success=false on connection error")
@@ -203,7 +203,7 @@ func TestCheckBootStatus_URLConstruction(t *testing.T) {
 	}))
 	defer server.Close()
 
-	_, _ = checkBootStatus(server.URL, 2, 1, "token")
+	_, _ = checkBootStatus(server.URL, 2, 1, "token", "login:")
 
 	if capturedPath != "/api/bmc" {
 		t.Errorf("expected path /api/bmc, got %s", capturedPath)
@@ -244,10 +244,41 @@ func TestCheckBootStatus_LoginPromptVariations(t *testing.T) {
 			}))
 			defer server.Close()
 
-			success, _ := checkBootStatus(server.URL, 1, 1, "token")
+			success, _ := checkBootStatus(server.URL, 1, 1, "token", "login:")
 
 			if success != tc.expected {
 				t.Errorf("expected success=%v for response '%s', got %v", tc.expected, tc.response, success)
+			}
+		})
+	}
+}
+
+func TestCheckBootStatus_CustomPattern(t *testing.T) {
+	testCases := []struct {
+		name     string
+		response string
+		pattern  string
+		expected bool
+	}{
+		{"talos ready pattern", "[talos] machine is running and ready", "machine is running and ready", true},
+		{"talos boot sequence done", "[talos] boot sequence: done", "boot sequence: done", true},
+		{"custom pattern match", "System initialized successfully", "initialized successfully", true},
+		{"pattern not found", "still booting...", "machine is running and ready", false},
+		{"wrong pattern", "login:", "machine is running and ready", false},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				w.WriteHeader(http.StatusOK)
+				_, _ = w.Write([]byte(tc.response))
+			}))
+			defer server.Close()
+
+			success, _ := checkBootStatus(server.URL, 1, 1, "token", tc.pattern)
+
+			if success != tc.expected {
+				t.Errorf("expected success=%v for pattern '%s' in response '%s', got %v", tc.expected, tc.pattern, tc.response, success)
 			}
 		})
 	}
