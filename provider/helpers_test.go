@@ -89,7 +89,7 @@ func TestCheckBootStatus_Success(t *testing.T) {
 
 		// Return response with login prompt
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte("Some boot output...\nlogin: "))
+		_, _ = w.Write([]byte("Some boot output...\nlogin: "))
 	}))
 	defer server.Close()
 
@@ -111,11 +111,11 @@ func TestCheckBootStatus_TokenInHeader(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		capturedAuth = r.Header.Get("Authorization")
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte("login:"))
+		_, _ = w.Write([]byte("login:"))
 	}))
 	defer server.Close()
 
-	checkBootStatus(server.URL, 1, 1, expectedToken)
+	_, _ = checkBootStatus(server.URL, 1, 1, expectedToken)
 
 	expectedHeader := "Bearer " + expectedToken
 	if capturedAuth != expectedHeader {
@@ -140,11 +140,11 @@ func TestCheckBootStatus_NodeInURL(t *testing.T) {
 			server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				capturedNode = r.URL.Query().Get("node")
 				w.WriteHeader(http.StatusOK)
-				w.Write([]byte("login:"))
+				_, _ = w.Write([]byte("login:"))
 			}))
 			defer server.Close()
 
-			checkBootStatus(server.URL, tc.node, 1, "token")
+			_, _ = checkBootStatus(server.URL, tc.node, 1, "token")
 
 			if capturedNode != tc.expectedNode {
 				t.Errorf("expected node=%s in URL, got node=%s", tc.expectedNode, capturedNode)
@@ -157,7 +157,7 @@ func TestCheckBootStatus_Timeout(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// Return response without login prompt
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte("Booting...\nStill booting..."))
+		_, _ = w.Write([]byte("Booting...\nStill booting..."))
 	}))
 	defer server.Close()
 
@@ -199,11 +199,11 @@ func TestCheckBootStatus_URLConstruction(t *testing.T) {
 		capturedPath = r.URL.Path
 		capturedQuery = r.URL.RawQuery
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte("login:"))
+		_, _ = w.Write([]byte("login:"))
 	}))
 	defer server.Close()
 
-	checkBootStatus(server.URL, 2, 1, "token")
+	_, _ = checkBootStatus(server.URL, 2, 1, "token")
 
 	if capturedPath != "/api/bmc" {
 		t.Errorf("expected path /api/bmc, got %s", capturedPath)
@@ -240,7 +240,7 @@ func TestCheckBootStatus_LoginPromptVariations(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.WriteHeader(http.StatusOK)
-				w.Write([]byte(tc.response))
+				_, _ = w.Write([]byte(tc.response))
 			}))
 			defer server.Close()
 

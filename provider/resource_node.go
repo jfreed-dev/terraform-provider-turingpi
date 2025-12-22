@@ -85,7 +85,9 @@ func resourceNodeStatus(d *schema.ResourceData, meta interface{}) error {
 	node := d.Get("node").(int)
 	currentPower := checkPowerStatus(node)
 
-	d.Set("power_state", currentPower)
+	if err := d.Set("power_state", currentPower); err != nil {
+		return fmt.Errorf("failed to set power_state: %v", err)
+	}
 	return nil
 }
 

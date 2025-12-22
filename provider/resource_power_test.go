@@ -62,18 +62,22 @@ func TestResourcePower_RequiredFields(t *testing.T) {
 func TestResourcePower_HasCRUDFunctions(t *testing.T) {
 	r := resourcePower()
 
+	//nolint:staticcheck // SA1019: intentionally testing deprecated Create field
 	if r.Create == nil {
 		t.Error("resource should have Create function")
 	}
 
+	//nolint:staticcheck // SA1019: intentionally testing deprecated Read field
 	if r.Read == nil {
 		t.Error("resource should have Read function")
 	}
 
+	//nolint:staticcheck // SA1019: intentionally testing deprecated Update field
 	if r.Update == nil {
 		t.Error("resource should have Update function")
 	}
 
+	//nolint:staticcheck // SA1019: intentionally testing deprecated Delete field
 	if r.Delete == nil {
 		t.Error("resource should have Delete function")
 	}
@@ -83,8 +87,8 @@ func TestResourcePowerSet_SetsId(t *testing.T) {
 	r := resourcePower()
 	d := r.TestResourceData()
 
-	d.Set("node", 1)
-	d.Set("state", true)
+	_ = d.Set("node", 1)
+	_ = d.Set("state", true)
 
 	err := resourcePowerSet(d, nil)
 	if err != nil {
@@ -113,8 +117,8 @@ func TestResourcePowerSet_DifferentNodes(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.expectedId, func(t *testing.T) {
 			d := r.TestResourceData()
-			d.Set("node", tc.node)
-			d.Set("state", true)
+			_ = d.Set("node", tc.node)
+			_ = d.Set("state", true)
 
 			err := resourcePowerSet(d, nil)
 			if err != nil {
@@ -142,8 +146,8 @@ func TestResourcePowerSet_PowerStates(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			d := r.TestResourceData()
-			d.Set("node", 1)
-			d.Set("state", tc.state)
+			_ = d.Set("node", 1)
+			_ = d.Set("state", tc.state)
 
 			err := resourcePowerSet(d, nil)
 			if err != nil {

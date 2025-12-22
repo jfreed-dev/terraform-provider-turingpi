@@ -192,6 +192,7 @@ func TestProvider_HasResources(t *testing.T) {
 func TestProvider_HasConfigureFunc(t *testing.T) {
 	p := Provider()
 
+	//nolint:staticcheck // SA1019: intentionally testing deprecated ConfigureFunc field
 	if p.ConfigureFunc == nil {
 		t.Error("provider should have a ConfigureFunc")
 	}
