@@ -25,17 +25,26 @@ jobs:
         run: go test -v -race ./...
 
       - name: Import GPG key
-        if: ${{ env.GPG_PRIVATE_KEY != '' }}
+        if: ${{ secrets.GPG_PRIVATE_KEY != '' }}
         uses: crazy-max/ghaction-import-gpg@v6
         id: import_gpg
-        env:
-          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
-          PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
         with:
           gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
           passphrase: ${{ secrets.GPG_PASSPHRASE }}
 
-      - name: Run GoReleaser
+      - name: Run GoReleaser (signed)
+        if: ${{ secrets.GPG_PRIVATE_KEY != '' }}
+        uses: goreleaser/goreleaser-action@v6
+        with:
+          distribution: goreleaser
+          version: '~> v2'
+          args: release --clean -f .goreleaser.signing.yml
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GPG_FINGERPRINT: ${{ steps.import_gpg.outputs.fingerprint }}
+
+      - name: Run GoReleaser (unsigned)
+        if: ${{ secrets.GPG_PRIVATE_KEY == '' }}
         uses: goreleaser/goreleaser-action@v6
         with:
           distribution: goreleaser
@@ -43,4 +52,3 @@ jobs:
           args: release --clean
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GPG_FINGERPRINT: ${{ steps.import_gpg.outputs.fingerprint }}
