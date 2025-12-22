@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"net/http"
 )
 
 func authenticate(endpoint, username, password string) (string, error) {
@@ -12,7 +11,7 @@ func authenticate(endpoint, username, password string) (string, error) {
 	data := map[string]string{"username": username, "password": password}
 	jsonData, _ := json.Marshal(data)
 
-	resp, err := http.Post(url, "application/json", bytes.NewBuffer(jsonData))
+	resp, err := HTTPClient.Post(url, "application/json", bytes.NewBuffer(jsonData))
 	if err != nil {
 		return "", err
 	}

@@ -1,6 +1,9 @@
 # Claude Code
 CLAUDE.md
 
+# Testing directory (may contain credentials)
+testing/
+
 # Go
 terraform-provider-turingpi
 turingpi-terraform-provider

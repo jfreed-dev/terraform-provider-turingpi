@@ -23,7 +23,7 @@ terraform {
   required_providers {
     turingpi = {
       source  = "jfreed-dev/turingpi"
-      version = "1.0.3"
+      version = "1.0.4"
     }
   }
 }
@@ -49,6 +49,7 @@ The provider requires BMC credentials to authenticate with the Turing Pi board.
 - `username` - (Required) BMC username. Can also be set via `TURINGPI_USERNAME` environment variable.
 - `password` - (Required) BMC password. Can also be set via `TURINGPI_PASSWORD` environment variable.
 - `endpoint` - (Optional) BMC API endpoint URL. Defaults to `https://turingpi.local`. Can also be set via `TURINGPI_ENDPOINT` environment variable.
+- `insecure` - (Optional) Skip TLS certificate verification. Useful for self-signed or expired certificates. Defaults to `false`. Can also be set via `TURINGPI_INSECURE` environment variable.
 
 ### Using Environment Variables
 
@@ -56,6 +57,7 @@ The provider requires BMC credentials to authenticate with the Turing Pi board.
 export TURINGPI_USERNAME=root
 export TURINGPI_PASSWORD=turing
 export TURINGPI_ENDPOINT=https://192.168.1.100
+export TURINGPI_INSECURE=true  # optional, for self-signed/expired certs
 ```
 
 ```hcl
