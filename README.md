@@ -1,40 +1,23 @@
 # Terraform Provider for Turing Pi 2.5
 
+[![Terraform Registry](https://img.shields.io/badge/terraform-registry-blueviolet)](https://registry.terraform.io/providers/jfreed-dev/turingpi)
 [![Go](https://github.com/jfreed-dev/terraform-provider-turingpi/actions/workflows/go.yml/badge.svg)](https://github.com/jfreed-dev/terraform-provider-turingpi/actions/workflows/go.yml)
 [![Release](https://img.shields.io/github/v/release/jfreed-dev/terraform-provider-turingpi)](https://github.com/jfreed-dev/terraform-provider-turingpi/releases/latest)
 [![License](https://img.shields.io/github/license/jfreed-dev/terraform-provider-turingpi)](LICENSE)
 
 A Terraform provider for managing Turing Pi's Baseboard Management Controller (BMC), enabling power management, firmware flashing, and node provisioning.
 
-## Prerequisites
+## Installation
 
-- [Go 1.23+](https://go.dev/)
-- [Terraform](https://www.terraform.io/)
+The provider is available on the [Terraform Registry](https://registry.terraform.io/providers/jfreed-dev/turingpi). Terraform will automatically download it when you run `terraform init`.
 
-## Building & Installation
-
-```bash
-# Clone and build
-git clone https://github.com/jfreed-dev/terraform-provider-turingpi.git
-cd terraform-provider-turingpi
-go build -o terraform-provider-turingpi
-
-# Install (Linux/macOS)
-mkdir -p ~/.terraform.d/plugins/local/turingpi/turingpi/1.0.1/linux_amd64/
-mv terraform-provider-turingpi ~/.terraform.d/plugins/local/turingpi/turingpi/1.0.1/linux_amd64/
-
-# Install (Windows)
-mkdir %APPDATA%\terraform.d\plugins\local\turingpi\turingpi\1.0.1\windows_amd64\
-move terraform-provider-turingpi.exe %APPDATA%\terraform.d\plugins\local\turingpi\turingpi\1.0.1\windows_amd64\
-```
-
-## Provider Configuration
+## Usage
 
 ```hcl
 terraform {
   required_providers {
     turingpi = {
-      source  = "local/turingpi/turingpi"
+      source  = "jfreed-dev/turingpi"
       version = "1.0.1"
     }
   }
@@ -107,12 +90,16 @@ See the [examples](./examples) directory for complete configurations:
 
 ## Development
 
+Requires [Go 1.23+](https://go.dev/).
+
 ```bash
+# Clone and build
+git clone https://github.com/jfreed-dev/terraform-provider-turingpi.git
+cd terraform-provider-turingpi
+go build -o terraform-provider-turingpi
+
 # Run tests
 go test -v ./...
-
-# Build
-go build -o terraform-provider-turingpi
 
 # Enable debug logging
 export TF_LOG=DEBUG
