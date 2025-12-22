@@ -20,12 +20,12 @@ cd terraform-provider-turingpi
 go build -o terraform-provider-turingpi
 
 # Install (Linux/macOS)
-mkdir -p ~/.terraform.d/plugins/local/turingpi/turingpi/1.0.0/linux_amd64/
-mv terraform-provider-turingpi ~/.terraform.d/plugins/local/turingpi/turingpi/1.0.0/linux_amd64/
+mkdir -p ~/.terraform.d/plugins/local/turingpi/turingpi/1.0.1/linux_amd64/
+mv terraform-provider-turingpi ~/.terraform.d/plugins/local/turingpi/turingpi/1.0.1/linux_amd64/
 
 # Install (Windows)
-mkdir %APPDATA%\terraform.d\plugins\local\turingpi\turingpi\1.0.0\windows_amd64\
-move terraform-provider-turingpi.exe %APPDATA%\terraform.d\plugins\local\turingpi\turingpi\1.0.0\windows_amd64\
+mkdir %APPDATA%\terraform.d\plugins\local\turingpi\turingpi\1.0.1\windows_amd64\
+move terraform-provider-turingpi.exe %APPDATA%\terraform.d\plugins\local\turingpi\turingpi\1.0.1\windows_amd64\
 ```
 
 ## Provider Configuration
@@ -35,7 +35,7 @@ terraform {
   required_providers {
     turingpi = {
       source  = "local/turingpi/turingpi"
-      version = "1.0.0"
+      version = "1.0.1"
     }
   }
 }

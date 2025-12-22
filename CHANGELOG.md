@@ -7,15 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.1] - 2025-12-22
+
 ### Added
 - Example Terraform configurations (basic, flash-firmware, full-provisioning)
 - Build, release, and license badges to README
+- Terraform Registry manifest for registry publishing
+- GPG signing support for releases
 
 ### Fixed
 - All golangci-lint issues (unchecked errors, deprecated APIs)
 - GoReleaser config for unsigned releases
 
-## [1.0.0] - 2024-12-22
+## [1.0.0] - 2025-12-22
 
 ### Added
 - Initial release
@@ -35,5 +39,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Release automation workflow with GoReleaser
 - Multi-platform binaries (linux/darwin/windows, amd64/arm64)
 
-[Unreleased]: https://github.com/jfreed-dev/terraform-provider-turingpi/compare/v1.0.0...HEAD
+[Unreleased]: https://github.com/jfreed-dev/terraform-provider-turingpi/compare/v1.0.1...HEAD
+[1.0.1]: https://github.com/jfreed-dev/terraform-provider-turingpi/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/jfreed-dev/terraform-provider-turingpi/releases/tag/v1.0.0
