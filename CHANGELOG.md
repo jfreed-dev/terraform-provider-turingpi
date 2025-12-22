@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.3] - 2025-12-22
+
+### Added
+- Terraform Registry documentation (docs/index.md, docs/resources/)
+- Provider overview and authentication docs
+- Resource documentation for turingpi_power, turingpi_flash, turingpi_node
+
 ## [1.0.2] - 2025-12-22
 
 ### Changed
@@ -50,7 +57,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Release automation workflow with GoReleaser
 - Multi-platform binaries (linux/darwin/windows, amd64/arm64)
 
-[Unreleased]: https://github.com/jfreed-dev/terraform-provider-turingpi/compare/v1.0.2...HEAD
+[Unreleased]: https://github.com/jfreed-dev/terraform-provider-turingpi/compare/v1.0.3...HEAD
+[1.0.3]: https://github.com/jfreed-dev/terraform-provider-turingpi/compare/v1.0.2...v1.0.3
 [1.0.2]: https://github.com/jfreed-dev/terraform-provider-turingpi/compare/v1.0.1...v1.0.2
 [1.0.1]: https://github.com/jfreed-dev/terraform-provider-turingpi/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/jfreed-dev/terraform-provider-turingpi/releases/tag/v1.0.0
