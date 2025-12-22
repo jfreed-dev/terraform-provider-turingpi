@@ -13,8 +13,10 @@ The Turing Pi provider enables Terraform-based management of [Turing Pi 2.5](htt
 
 - **Power Management** - Control power state of individual compute nodes
 - **Firmware Flashing** - Flash firmware images to nodes
-- **Boot Verification** - Monitor UART output to verify successful boot
+- **Boot Verification** - Monitor UART output to verify successful boot with configurable patterns
 - **Node Provisioning** - Combined resource for complete node management
+- **Talos Linux Support** - Built-in support for Talos Linux boot detection
+- **TLS Flexibility** - Skip certificate verification for self-signed or expired BMC certificates
 
 ## Example Usage
 
@@ -37,6 +39,18 @@ provider "turingpi" {
 resource "turingpi_power" "node1" {
   node  = 1
   state = true
+}
+```
+
+### Talos Linux Example
+
+```hcl
+resource "turingpi_node" "talos_node" {
+  node                 = 1
+  power_state          = "on"
+  boot_check           = true
+  boot_check_pattern   = "machine is running and ready"
+  login_prompt_timeout = 180
 }
 ```
 

@@ -21,20 +21,28 @@ variable "boot_timeout" {
   default     = 120
 }
 
+variable "boot_pattern" {
+  description = "Pattern to detect in UART output for boot verification"
+  type        = string
+  default     = "login:"  # Use "machine is running and ready" for Talos Linux
+}
+
 # Fully provision node 1 with firmware and boot verification
 resource "turingpi_node" "node1" {
   node                 = 1
   power_state          = "on"
   firmware_file        = var.firmware_path != "" ? var.firmware_path : null
   boot_check           = true
+  boot_check_pattern   = var.boot_pattern
   login_prompt_timeout = var.boot_timeout
 }
 
 # Provision node 2 without firmware flash
 resource "turingpi_node" "node2" {
-  node        = 2
-  power_state = "on"
-  boot_check  = true
+  node               = 2
+  power_state        = "on"
+  boot_check         = true
+  boot_check_pattern = var.boot_pattern
 }
 
 # Keep node 3 powered off
