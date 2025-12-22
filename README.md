@@ -7,6 +7,15 @@
 
 A Terraform provider for managing Turing Pi's Baseboard Management Controller (BMC), enabling power management, firmware flashing, and node provisioning.
 
+## Features
+
+- **Power Management** - Control power state of individual compute nodes (1-4)
+- **Firmware Flashing** - Flash firmware images to nodes with automatic resource recreation
+- **Boot Verification** - Monitor UART output with configurable patterns to verify successful boot
+- **Talos Linux Support** - Built-in boot detection for Talos Linux clusters
+- **TLS Flexibility** - Skip certificate verification for self-signed or expired BMC certificates
+- **Environment Variables** - Configure provider via environment variables for CI/CD pipelines
+
 ## Installation
 
 The provider is available on the [Terraform Registry](https://registry.terraform.io/providers/jfreed-dev/turingpi). Terraform will automatically download it when you run `terraform init`.
