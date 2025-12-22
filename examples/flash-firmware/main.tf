@@ -2,7 +2,7 @@ terraform {
   required_providers {
     turingpi = {
       source  = "local/turingpi/turingpi"
-      version = "1.0.0"
+      version = "1.0.1"
     }
   }
 }
