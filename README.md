@@ -18,7 +18,7 @@ terraform {
   required_providers {
     turingpi = {
       source  = "jfreed-dev/turingpi"
-      version = "1.0.4"
+      version = "1.0.5"
     }
   }
 }
@@ -74,11 +74,19 @@ Comprehensive node management: power control, firmware flashing, and boot verifi
 
 ```hcl
 resource "turingpi_node" "node1" {
-  node                 = 1                        # Node ID (1-4)
-  power_state          = "on"                     # "on" or "off" (default: "on")
-  firmware_file        = "/path/to/firmware.img"  # optional
-  boot_check           = true                     # Monitor UART for login prompt (default: false)
-  login_prompt_timeout = 120                      # Timeout in seconds (default: 60)
+  node                 = 1                              # Node ID (1-4)
+  power_state          = "on"                           # "on" or "off" (default: "on")
+  firmware_file        = "/path/to/firmware.img"        # optional
+  boot_check           = true                           # Monitor UART for boot pattern (default: false)
+  boot_check_pattern   = "login:"                       # Pattern to detect (default: "login:")
+  login_prompt_timeout = 120                            # Timeout in seconds (default: 60)
+}
+
+# For Talos Linux, use the appropriate boot pattern:
+resource "turingpi_node" "talos" {
+  node               = 2
+  boot_check         = true
+  boot_check_pattern = "machine is running and ready"
 }
 ```
 

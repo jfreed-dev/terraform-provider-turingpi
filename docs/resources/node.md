@@ -42,6 +42,18 @@ resource "turingpi_node" "node1" {
 }
 ```
 
+### Talos Linux Boot Verification
+
+```hcl
+resource "turingpi_node" "talos_node" {
+  node                 = 1
+  power_state          = "on"
+  boot_check           = true
+  boot_check_pattern   = "machine is running and ready"
+  login_prompt_timeout = 180
+}
+```
+
 ### Complete Cluster Setup
 
 ```hcl
@@ -95,8 +107,9 @@ output "node_status" {
 - `node` - (Required, Integer) The node ID (1-4).
 - `power_state` - (Optional, String) The desired power state. Valid values are `"on"` or `"off"`. Defaults to `"on"`.
 - `firmware_file` - (Optional, String) Path to the firmware image file. If specified, firmware will be flashed to the node.
-- `boot_check` - (Optional, Boolean) Whether to monitor UART output for login prompt to verify successful boot. Defaults to `false`.
-- `login_prompt_timeout` - (Optional, Integer) Timeout in seconds to wait for login prompt when `boot_check` is enabled. Defaults to `60`.
+- `boot_check` - (Optional, Boolean) Whether to monitor UART output to verify successful boot. Defaults to `false`.
+- `boot_check_pattern` - (Optional, String) The pattern to search for in UART output to confirm successful boot. Defaults to `"login:"`. Use `"machine is running and ready"` for Talos Linux.
+- `login_prompt_timeout` - (Optional, Integer) Timeout in seconds to wait for boot pattern when `boot_check` is enabled. Defaults to `60`.
 
 ## Attribute Reference
 
@@ -106,11 +119,19 @@ In addition to all arguments above, the following attributes are exported:
 
 ## Boot Verification
 
-When `boot_check` is enabled, the provider monitors the node's UART output for a login prompt, indicating the operating system has successfully booted. This is useful for:
+When `boot_check` is enabled, the provider monitors the node's UART output for a specific pattern indicating the operating system has successfully booted. This is useful for:
 
 - Ensuring firmware flashing completed successfully
 - Waiting for nodes to be ready before dependent operations
 - Detecting boot failures
+
+### Supported Operating Systems
+
+| OS | Pattern |
+|----|---------|
+| Standard Linux | `login:` (default) |
+| Talos Linux | `machine is running and ready` |
+| Custom | Any string present in UART output |
 
 The `login_prompt_timeout` controls how long to wait for the boot to complete. Increase this value for slower compute modules or complex boot processes.
 

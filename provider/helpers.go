@@ -32,7 +32,7 @@ func flashNode(node int, firmware string) {
 	// Replace this with an API call to flash the firmware
 }
 
-func checkBootStatus(endpoint string, node int, timeout int, token string) (bool, error) {
+func checkBootStatus(endpoint string, node int, timeout int, token string, pattern string) (bool, error) {
 	url := fmt.Sprintf("%s/api/bmc?opt=get&type=uart&node=%d", endpoint, node)
 
 	deadline := time.Now().Add(time.Duration(timeout) * time.Second)
@@ -55,14 +55,14 @@ func checkBootStatus(endpoint string, node int, timeout int, token string) (bool
 			return false, fmt.Errorf("failed to read UART response: %v", err)
 		}
 
-		// Simulate login prompt detection
-		if strings.Contains(string(body), "login:") {
-			fmt.Printf("Node %d booted successfully: login prompt detected.\n", node)
+		// Check for configured boot pattern in UART output
+		if strings.Contains(string(body), pattern) {
+			fmt.Printf("Node %d booted successfully: pattern %q detected.\n", node, pattern)
 			return true, nil
 		}
 
 		time.Sleep(5 * time.Second)
 	}
 
-	return false, fmt.Errorf("timeout reached: node %d did not boot successfully", node)
+	return false, fmt.Errorf("timeout reached: node %d did not boot successfully (pattern %q not found)", node, pattern)
 }
