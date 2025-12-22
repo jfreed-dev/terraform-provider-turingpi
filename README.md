@@ -91,6 +91,7 @@ A Terraform provider for managing Turing Pi's Baseboard Management Controller (B
    provider "turingpi" {
      username = "your-username"
      password = "your-password"
+     endpoint = "https://turingpi.local"  # Optional, defaults to https://turingpi.local
    }
    ```
 
@@ -129,13 +130,14 @@ A Terraform provider for managing Turing Pi's Baseboard Management Controller (B
 
 To avoid exposing sensitive credentials directly in your Terraform configuration files:
 
-1. **Use Environment Variables:** Terraform supports environment variables for sensitive provider configurations. You can set `TURINGPI_USERNAME` and `TURINGPI_PASSWORD` in your shell environment:
+1. **Use Environment Variables:** Terraform supports environment variables for provider configurations. You can set `TURINGPI_USERNAME`, `TURINGPI_PASSWORD`, and optionally `TURINGPI_ENDPOINT` in your shell environment:
 
    ```bash
    export TURINGPI_USERNAME=root
    export TURINGPI_PASSWORD=turing
+   export TURINGPI_ENDPOINT=https://192.168.1.100  # Optional, defaults to https://turingpi.local
    ```
-   
+
    **Update** the provider block to use environment variables:
 
    ```hcl
@@ -170,8 +172,9 @@ Here’s a complete example of a Terraform configuration using the Turing Pi pro
    }
 
    provider "turingpi" {
-     username = "root"      # Replace with your BMC username
-     password = "turing"    # Replace with your BMC password
+     username = "root"                       # Replace with your BMC username
+     password = "turing"                     # Replace with your BMC password
+     # endpoint = "https://192.168.1.100"   # Optional: specify BMC IP/hostname (defaults to https://turingpi.local)
    }
 
    resource "turingpi_power" "node1" {

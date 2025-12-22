@@ -46,12 +46,12 @@ func resourceNode() *schema.Resource {
 }
 
 func resourceNodeProvision(d *schema.ResourceData, meta interface{}) error {
+	config := meta.(*ProviderConfig)
 	node := d.Get("node").(int)
 	firmware := d.Get("firmware_file").(string)
 	powerState := d.Get("power_state").(string)
 	bootCheck := d.Get("boot_check").(bool)
 	timeout := d.Get("login_prompt_timeout").(int)
-	token := meta.(string) // Assuming token is passed in metadata
 
 	// Step 1: Turn on the node
 	if powerState == "on" {
@@ -68,7 +68,7 @@ func resourceNodeProvision(d *schema.ResourceData, meta interface{}) error {
 	// Step 3: Boot check
 	if bootCheck {
 		fmt.Printf("Checking boot status for node %d...\n", node)
-		success, err := checkBootStatus(node, timeout, token)
+		success, err := checkBootStatus(config.Endpoint, node, timeout, config.Token)
 		if err != nil {
 			return fmt.Errorf("boot status check failed for node %d: %v", node, err)
 		}
