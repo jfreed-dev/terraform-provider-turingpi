@@ -2,7 +2,8 @@
 
 BINARY_NAME=terraform-provider-turingpi
 VERSION?=1.0.0
-PREV_VERSION=$(shell git describe --tags --abbrev=0 2>/dev/null | sed 's/^v//')
+# Extract current version from README (more reliable than git tags)
+CURRENT_VERSION=$(shell grep -oP 'version = "\K[0-9]+\.[0-9]+\.[0-9]+' README.md | head -1)
 GOOS?=$(shell go env GOOS)
 GOARCH?=$(shell go env GOARCH)
 PLUGIN_DIR=~/.terraform.d/plugins/local/turingpi/turingpi/$(VERSION)/$(GOOS)_$(GOARCH)
@@ -57,13 +58,13 @@ release-prep:
 		echo "ERROR: Please specify VERSION, e.g., make release-prep VERSION=1.0.9"; \
 		exit 1; \
 	fi
-	@echo "Updating version references from $(PREV_VERSION) to $(VERSION)..."
+	@echo "Updating version references from $(CURRENT_VERSION) to $(VERSION)..."
 	@# Update README.md
-	@sed -i 's/version = "$(PREV_VERSION)"/version = "$(VERSION)"/g' README.md
+	@sed -i 's/version = "$(CURRENT_VERSION)"/version = "$(VERSION)"/g' README.md
 	@# Update docs
-	@find docs -name "*.md" -exec sed -i 's/version = "$(PREV_VERSION)"/version = "$(VERSION)"/g' {} \;
+	@find docs -name "*.md" -exec sed -i 's/version = "$(CURRENT_VERSION)"/version = "$(VERSION)"/g' {} \;
 	@# Update examples
-	@find examples -name "*.tf" -exec sed -i 's/version = "$(PREV_VERSION)"/version = "$(VERSION)"/g' {} \;
+	@find examples -name "*.tf" -exec sed -i 's/version = "$(CURRENT_VERSION)"/version = "$(VERSION)"/g' {} \;
 	@echo "Version references updated to $(VERSION)"
 
 # Full release - updates docs, commits, tags, and pushes
