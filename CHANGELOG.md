@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.8] - 2025-12-24
+
+### Changed
+- Add security workflow badge to README
+- Update all documentation examples to v1.0.7
+- Update examples/basic, examples/flash-firmware, examples/full-provisioning to v1.0.7
+
 ## [1.0.7] - 2025-12-24
 
 ### Changed
@@ -103,7 +110,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Release automation workflow with GoReleaser
 - Multi-platform binaries (linux/darwin/windows, amd64/arm64)
 
-[Unreleased]: https://github.com/jfreed-dev/terraform-provider-turingpi/compare/v1.0.7...HEAD
+[Unreleased]: https://github.com/jfreed-dev/terraform-provider-turingpi/compare/v1.0.8...HEAD
+[1.0.8]: https://github.com/jfreed-dev/terraform-provider-turingpi/compare/v1.0.7...v1.0.8
 [1.0.7]: https://github.com/jfreed-dev/terraform-provider-turingpi/compare/v1.0.6...v1.0.7
 [1.0.6]: https://github.com/jfreed-dev/terraform-provider-turingpi/compare/v1.0.5...v1.0.6
 [1.0.5]: https://github.com/jfreed-dev/terraform-provider-turingpi/compare/v1.0.4...v1.0.5
