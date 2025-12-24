@@ -7,6 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.6] - 2025-12-24
+
+### Security
+- Pin all GitHub Actions to SHA commits (supply chain protection)
+- Add Dependabot for automated security updates (Go modules + Actions)
+- Add gosec security scanner with SARIF reporting
+- Add dependency-review-action for PR vulnerability scanning
+- Enable branch protection (signed commits, required reviews, status checks)
+
+### Added
+- `.github/CODEOWNERS` for mandatory code review
+- `.github/dependabot.yml` for automated dependency updates
+- `.github/workflows/security.yml` for security scanning
+- GPG signature verification documentation in SECURITY.md
+
+### Changed
+- Workflows now use `go-version-file: go.mod` instead of hardcoded version
+- Enhanced SECURITY.md with release verification instructions
+
 ## [1.0.5] - 2025-12-22
 
 ### Added
@@ -74,7 +93,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Release automation workflow with GoReleaser
 - Multi-platform binaries (linux/darwin/windows, amd64/arm64)
 
-[Unreleased]: https://github.com/jfreed-dev/terraform-provider-turingpi/compare/v1.0.5...HEAD
+[Unreleased]: https://github.com/jfreed-dev/terraform-provider-turingpi/compare/v1.0.6...HEAD
+[1.0.6]: https://github.com/jfreed-dev/terraform-provider-turingpi/compare/v1.0.5...v1.0.6
 [1.0.5]: https://github.com/jfreed-dev/terraform-provider-turingpi/compare/v1.0.4...v1.0.5
 [1.0.4]: https://github.com/jfreed-dev/terraform-provider-turingpi/compare/v1.0.3...v1.0.4
 [1.0.3]: https://github.com/jfreed-dev/terraform-provider-turingpi/compare/v1.0.2...v1.0.3
