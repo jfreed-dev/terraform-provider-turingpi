@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.7] - 2025-12-24
+
+### Changed
+- Bump `terraform-plugin-sdk/v2` from 2.35.0 to 2.38.1
+- Bump `actions/checkout` from 4.3.1 to 6.0.1
+- Bump `actions/setup-go` from 5.6.0 to 6.1.0
+- Bump `golangci/golangci-lint-action` from 6.5.2 to 9.2.0
+- Bump `github/codeql-action` from 3.28.0 to 4.31.9
+- Bump `actions/dependency-review-action` from 4.5.0 to 4.8.2
+
 ## [1.0.6] - 2025-12-24
 
 ### Security
@@ -93,7 +103,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Release automation workflow with GoReleaser
 - Multi-platform binaries (linux/darwin/windows, amd64/arm64)
 
-[Unreleased]: https://github.com/jfreed-dev/terraform-provider-turingpi/compare/v1.0.6...HEAD
+[Unreleased]: https://github.com/jfreed-dev/terraform-provider-turingpi/compare/v1.0.7...HEAD
+[1.0.7]: https://github.com/jfreed-dev/terraform-provider-turingpi/compare/v1.0.6...v1.0.7
 [1.0.6]: https://github.com/jfreed-dev/terraform-provider-turingpi/compare/v1.0.5...v1.0.6
 [1.0.5]: https://github.com/jfreed-dev/terraform-provider-turingpi/compare/v1.0.4...v1.0.5
 [1.0.4]: https://github.com/jfreed-dev/terraform-provider-turingpi/compare/v1.0.3...v1.0.4
