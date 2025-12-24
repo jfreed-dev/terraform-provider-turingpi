@@ -1,0 +1,72 @@
+name: Security
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+  schedule:
+    # Run weekly on Monday at 00:00 UTC
+    - cron: '0 0 * * 1'
+
+permissions:
+  contents: read
+  security-events: write
+
+jobs:
+  # Verify commit signatures on PRs
+  verify-signatures:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        with:
+          fetch-depth: 0
+
+      - name: Verify commit signatures
+        run: |
+          echo "Checking commit signatures for PR commits..."
+          # Get the merge base and check all commits since then
+          BASE_SHA="${{ github.event.pull_request.base.sha }}"
+          HEAD_SHA="${{ github.event.pull_request.head.sha }}"
+
+          UNSIGNED_COMMITS=""
+          while IFS= read -r commit; do
+            if ! git verify-commit "$commit" 2>/dev/null; then
+              UNSIGNED_COMMITS="$UNSIGNED_COMMITS $commit"
+            fi
+          done < <(git rev-list "$BASE_SHA".."$HEAD_SHA")
+
+          if [ -n "$UNSIGNED_COMMITS" ]; then
+            echo "::warning::The following commits are not signed:$UNSIGNED_COMMITS"
+            echo "Consider signing your commits with GPG. See: https://docs.github.com/en/authentication/managing-commit-signature-verification"
+          else
+            echo "All commits are signed!"
+          fi
+
+  # Run gosec security scanner
+  gosec:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+
+      - name: Run Gosec Security Scanner
+        uses: securego/gosec@d4617f51baf75f4f809066386a4f9d27b3ac3e46 # v2.21.4
+        with:
+          args: '-no-fail -fmt sarif -out results.sarif ./...'
+
+      - name: Upload SARIF file
+        uses: github/codeql-action/upload-sarif@48ab28a6f5dbc2a99bf1e0131198dd8f1df78169 # v3.28.0
+        with:
+          sarif_file: results.sarif
+        if: always()
+
+  # Dependency review for PRs
+  dependency-review:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+
+      - name: Dependency Review
+        uses: actions/dependency-review-action@3b139cfc5fae8b618d3eae3675e383bb1769c019 # v4.5.0
