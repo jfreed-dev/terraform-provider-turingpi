@@ -2,6 +2,7 @@
 
 [![Terraform Registry](https://img.shields.io/badge/terraform-registry-blueviolet)](https://registry.terraform.io/providers/jfreed-dev/turingpi)
 [![Go](https://github.com/jfreed-dev/terraform-provider-turingpi/actions/workflows/go.yml/badge.svg)](https://github.com/jfreed-dev/terraform-provider-turingpi/actions/workflows/go.yml)
+[![Security](https://github.com/jfreed-dev/terraform-provider-turingpi/actions/workflows/security.yml/badge.svg)](https://github.com/jfreed-dev/terraform-provider-turingpi/actions/workflows/security.yml)
 [![Release](https://img.shields.io/github/v/release/jfreed-dev/terraform-provider-turingpi)](https://github.com/jfreed-dev/terraform-provider-turingpi/releases/latest)
 [![License](https://img.shields.io/github/license/jfreed-dev/terraform-provider-turingpi)](LICENSE)
 
