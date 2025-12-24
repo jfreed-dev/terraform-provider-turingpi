@@ -44,6 +44,44 @@ go test -v -race ./...
 3. Request review from maintainers
 4. Address any feedback
 
+## Release Process (Maintainers)
+
+Releases are automated via Makefile targets. All releases are GPG-signed and published to the [Terraform Registry](https://registry.terraform.io/providers/jfreed-dev/turingpi).
+
+### Creating a Release
+
+```bash
+# Full release: updates docs, runs tests, commits, tags, and pushes
+make release VERSION=1.0.10
+```
+
+This command will:
+1. Update version references in `README.md`, `docs/`, and `examples/`
+2. Run the full test suite
+3. Commit the version updates (GPG-signed)
+4. Create a signed tag `v1.0.10`
+5. Push to origin (triggers GitHub Actions release workflow)
+
+### Partial Release Prep
+
+```bash
+# Just update version numbers (no commit/tag)
+make release-prep VERSION=1.0.10
+```
+
+### Post-Release
+
+After the release workflow completes:
+1. Verify the release on [GitHub Releases](https://github.com/jfreed-dev/terraform-provider-turingpi/releases)
+2. Confirm it appears on [Terraform Registry](https://registry.terraform.io/providers/jfreed-dev/turingpi)
+3. Update `CHANGELOG.md` with release notes
+
+### Requirements
+
+- GPG key configured for commit/tag signing (`git config commit.gpgsign true`)
+- GPG key registered on GitHub for verified badges
+- Push access to the repository
+
 ## Testing Against Real Hardware
 
 If you have access to a Turing Pi 2.5:
