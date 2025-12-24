@@ -1,7 +1,6 @@
 package provider
 
 import (
-	"os"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -93,7 +92,7 @@ func TestProvider_EndpointEnvDefault(t *testing.T) {
 	p := Provider()
 
 	// Clear any existing env var
-	os.Unsetenv("TURINGPI_ENDPOINT")
+	t.Setenv("TURINGPI_ENDPOINT", "")
 
 	// Get the default value
 	defaultFunc := p.Schema["endpoint"].DefaultFunc
@@ -115,8 +114,7 @@ func TestProvider_EndpointEnvOverride(t *testing.T) {
 	p := Provider()
 
 	customEndpoint := "https://192.168.1.100"
-	os.Setenv("TURINGPI_ENDPOINT", customEndpoint)
-	defer os.Unsetenv("TURINGPI_ENDPOINT")
+	t.Setenv("TURINGPI_ENDPOINT", customEndpoint)
 
 	defaultFunc := p.Schema["endpoint"].DefaultFunc
 	val, err := defaultFunc()
@@ -133,8 +131,7 @@ func TestProvider_UsernameEnvDefault(t *testing.T) {
 	p := Provider()
 
 	customUsername := "testuser"
-	os.Setenv("TURINGPI_USERNAME", customUsername)
-	defer os.Unsetenv("TURINGPI_USERNAME")
+	t.Setenv("TURINGPI_USERNAME", customUsername)
 
 	defaultFunc := p.Schema["username"].DefaultFunc
 	if defaultFunc == nil {
@@ -155,8 +152,7 @@ func TestProvider_PasswordEnvDefault(t *testing.T) {
 	p := Provider()
 
 	customPassword := "testpass"
-	os.Setenv("TURINGPI_PASSWORD", customPassword)
-	defer os.Unsetenv("TURINGPI_PASSWORD")
+	t.Setenv("TURINGPI_PASSWORD", customPassword)
 
 	defaultFunc := p.Schema["password"].DefaultFunc
 	if defaultFunc == nil {

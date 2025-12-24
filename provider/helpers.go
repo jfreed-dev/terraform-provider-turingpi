@@ -49,7 +49,7 @@ func checkBootStatus(endpoint string, node int, timeout int, token string, patte
 			return false, fmt.Errorf("UART request failed: %v", err)
 		}
 
-		defer resp.Body.Close()
+		defer func() { _ = resp.Body.Close() }()
 		body, err := io.ReadAll(resp.Body)
 		if err != nil {
 			return false, fmt.Errorf("failed to read UART response: %v", err)
