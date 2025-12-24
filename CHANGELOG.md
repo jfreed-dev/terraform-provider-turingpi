@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- Fix golangci-lint v2.7.2 errcheck violations (resp.Body.Close, os.Setenv/Unsetenv)
+
 ## [1.0.9] - 2025-12-24
 
 ### Added
