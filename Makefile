@@ -72,9 +72,7 @@ release-prep:
 release: release-prep test
 	@echo "Committing version updates..."
 	@git add README.md docs/ examples/
-	@git commit -S -m "Update documentation to v$(VERSION)" \
-		-m "🤖 Generated with [Claude Code](https://claude.com/claude-code)" \
-		-m "Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>" || true
+	@git commit -S -m "Update documentation to v$(VERSION)" || true
 	@echo "Creating signed tag v$(VERSION)..."
 	@git tag -s -a v$(VERSION) -m "v$(VERSION)"
 	@echo "Pushing to origin..."
