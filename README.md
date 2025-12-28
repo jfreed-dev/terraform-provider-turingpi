@@ -17,6 +17,11 @@ A Terraform provider for managing Turing Pi's Baseboard Management Controller (B
 - **TLS Flexibility** - Skip certificate verification for self-signed or expired BMC certificates
 - **Environment Variables** - Configure provider via environment variables for CI/CD pipelines
 
+## Documentation
+
+- **[Architecture](docs/ARCHITECTURE.md)** - System diagrams, data flows, and component interactions
+- **[Terraform Registry](https://registry.terraform.io/providers/jfreed-dev/turingpi)** - Provider documentation
+
 ## Installation
 
 The provider is available on the [Terraform Registry](https://registry.terraform.io/providers/jfreed-dev/turingpi). Terraform will automatically download it when you run `terraform init`.
