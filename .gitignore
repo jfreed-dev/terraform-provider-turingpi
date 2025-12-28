@@ -1,6 +1,13 @@
-# Project configuration
+# AI coding assistants
 CLAUDE.md
-
+AGENT.md
+AGENTS.md
+GEMINI.md
+CODEX.md
+.claude/
+.gemini/
+.codex/
+ansible/.ansible/
 # Testing directory (may contain credentials)
 testing/
 
