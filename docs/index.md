@@ -2,7 +2,7 @@
 page_title: "Turing Pi Provider"
 subcategory: ""
 description: |-
-  Terraform provider for managing Turing Pi 2.5 BMC (Baseboard Management Controller).
+  Terraform provider for managing Turing Pi 2.5 BMC (Baseboard Management Controller). Use with the terraform-turingpi-modules for cluster deployment.
 ---
 
 # Turing Pi Provider
@@ -25,7 +25,7 @@ terraform {
   required_providers {
     turingpi = {
       source  = "jfreed-dev/turingpi"
-      version = "1.1.4"
+      version = "1.2.0"
     }
   }
 }
@@ -83,3 +83,36 @@ provider "turingpi" {}
 - [turingpi_power](resources/power.md) - Control node power state
 - [turingpi_flash](resources/flash.md) - Flash firmware to a node
 - [turingpi_node](resources/node.md) - Comprehensive node management
+
+## Related Modules
+
+For cluster deployment, use the [terraform-turingpi-modules](https://registry.terraform.io/modules/jfreed-dev/modules/turingpi):
+
+| Module | Description |
+|--------|-------------|
+| [flash-nodes](https://registry.terraform.io/modules/jfreed-dev/modules/turingpi/latest/submodules/flash-nodes) | Flash firmware to multiple nodes |
+| [talos-cluster](https://registry.terraform.io/modules/jfreed-dev/modules/turingpi/latest/submodules/talos-cluster) | Deploy Talos Kubernetes cluster |
+| [metallb](https://registry.terraform.io/modules/jfreed-dev/modules/turingpi/latest/submodules/metallb) | MetalLB load balancer addon |
+| [ingress-nginx](https://registry.terraform.io/modules/jfreed-dev/modules/turingpi/latest/submodules/ingress-nginx) | NGINX Ingress controller addon |
+
+```hcl
+module "flash" {
+  source  = "jfreed-dev/modules/turingpi//modules/flash-nodes"
+  version = "1.0.2"
+
+  nodes = {
+    1 = { firmware = "talos-arm64.raw" }
+    2 = { firmware = "talos-arm64.raw" }
+  }
+}
+
+module "cluster" {
+  source  = "jfreed-dev/modules/turingpi//modules/talos-cluster"
+  version = "1.0.2"
+
+  cluster_name     = "my-cluster"
+  cluster_endpoint = "https://192.168.1.101:6443"
+  control_plane    = [{ host = "192.168.1.101" }]
+  workers          = [{ host = "192.168.1.102" }]
+}
+```
