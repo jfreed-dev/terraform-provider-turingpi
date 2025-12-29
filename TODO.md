@@ -13,11 +13,12 @@ This file tracks planned features and implementation tasks for the Terraform Tur
 - [x] Add unit tests with mock SSH client
 
 ### Helm Integration
-- [ ] Create `provider/helm_client.go` for Helm chart deployment
-- [ ] Implement `DeployHelmChart()` function
-- [ ] Add Helm repo management (add, update)
-- [ ] Support custom values and value files
-- [ ] Add wait-for-ready logic for Helm releases
+- [x] Create `provider/helm_client.go` with HelmClient interface (mittwald/go-helm-client)
+- [x] Implement `DeployHelmChart()` and `DeployFromRepository()` functions
+- [x] Add Helm repo management (AddRepository, UpdateRepositories)
+- [x] Support custom values via ValuesYaml and Values map
+- [x] Add `WaitForHelmRelease()` with configurable timeout
+- [x] Add MockHelmClient for testing
 
 ### Testing Infrastructure
 - [x] Add mock SSH client for testing (MockSSHClient in cluster_helpers_test.go)
