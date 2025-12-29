@@ -48,9 +48,20 @@ func Provider() *schema.Provider {
 			},
 		},
 		ResourcesMap: map[string]*schema.Resource{
-			"turingpi_power": resourcePower(),
-			"turingpi_flash": resourceFlash(),
-			"turingpi_node":  resourceNode(),
+			"turingpi_power":         resourcePower(),
+			"turingpi_flash":         resourceFlash(),
+			"turingpi_node":          resourceNode(),
+			"turingpi_usb":           resourceUSB(),
+			"turingpi_network_reset": resourceNetworkReset(),
+			"turingpi_bmc_firmware":  resourceBMCFirmware(),
+			"turingpi_uart":          resourceUART(),
+			"turingpi_bmc_reboot":    resourceBMCReboot(),
+		},
+		DataSourcesMap: map[string]*schema.Resource{
+			"turingpi_info":  dataSourceInfo(),
+			"turingpi_usb":   dataSourceUSB(),
+			"turingpi_power": dataSourcePower(),
+			"turingpi_uart":  dataSourceUART(),
 		},
 		ConfigureFunc: configureProvider,
 	}

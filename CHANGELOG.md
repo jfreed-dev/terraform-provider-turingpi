@@ -7,6 +7,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **New Data Sources**
+  - `turingpi_info` - BMC version, network interfaces, storage devices, and node power status
+  - `turingpi_power` - Current power status of all nodes with aggregated counts
+  - `turingpi_usb` - Current USB routing configuration
+  - `turingpi_uart` - Read buffered UART output from nodes (clears buffer on read)
+
+- **New Resources**
+  - `turingpi_usb` - Configure USB routing between nodes and USB-A/BMC
+  - `turingpi_network_reset` - Trigger network switch reset
+  - `turingpi_bmc_firmware` - Upgrade BMC firmware (upload or local file)
+  - `turingpi_uart` - Write commands to node UART (serial console)
+  - `turingpi_bmc_reboot` - Trigger BMC reboot with readiness monitoring
+
+- **Enhanced Resources**
+  - `turingpi_power` - Added `reset` state for node reboot, added `current_state` computed attribute
+
+### Changed
+- All new resources use Context-aware CRUD functions (CreateContext, etc.)
+- Added input validation (ValidateDiagFunc) to all new resources
+- Comprehensive unit tests for all new resources and data sources
+
 ## [1.0.10] - 2025-12-24
 
 ### Fixed

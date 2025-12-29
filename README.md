@@ -12,7 +12,12 @@ A Terraform provider for managing Turing Pi's Baseboard Management Controller (B
 
 - **Power Management** - Control power state of individual compute nodes (1-4)
 - **Firmware Flashing** - Flash firmware images to nodes with automatic resource recreation
+- **BMC Firmware Upgrade** - Upgrade BMC firmware with file upload or local file support
+- **BMC Reboot** - Trigger BMC reboot with readiness monitoring
+- **UART Access** - Read and write to node serial consoles for boot monitoring and command execution
 - **Boot Verification** - Monitor UART output with configurable patterns to verify successful boot
+- **USB Routing** - Configure USB routing between nodes and USB-A connector or BMC
+- **Network Reset** - Trigger network switch reset for recovery after configuration changes
 - **Talos Linux Support** - Built-in boot detection for Talos Linux clusters
 - **TLS Flexibility** - Skip certificate verification for self-signed or expired BMC certificates
 - **Environment Variables** - Configure provider via environment variables for CI/CD pipelines
@@ -59,16 +64,86 @@ export TURINGPI_INSECURE=true                   # optional, for self-signed/expi
 provider "turingpi" {}
 ```
 
+## Data Sources
+
+### turingpi_info
+
+Retrieve BMC information including version, network, storage, and node power status.
+
+```hcl
+data "turingpi_info" "bmc" {}
+
+output "firmware_version" {
+  value = data.turingpi_info.bmc.firmware_version
+}
+
+output "node_power_status" {
+  value = data.turingpi_info.bmc.nodes
+}
+```
+
+### turingpi_usb
+
+Retrieve current USB routing configuration.
+
+```hcl
+data "turingpi_usb" "current" {}
+
+output "usb_config" {
+  value = {
+    mode  = data.turingpi_usb.current.mode   # "host" or "device"
+    node  = data.turingpi_usb.current.node   # 1-4
+    route = data.turingpi_usb.current.route  # "usb-a" or "bmc"
+  }
+}
+```
+
+### turingpi_power
+
+Retrieve current power status of all nodes.
+
+```hcl
+data "turingpi_power" "status" {}
+
+output "power_status" {
+  value = {
+    node1      = data.turingpi_power.status.node1  # true/false
+    nodes_on   = data.turingpi_power.status.powered_on_count
+    nodes_off  = data.turingpi_power.status.powered_off_count
+  }
+}
+```
+
+### turingpi_uart
+
+Read buffered UART (serial console) output from a node. Reading clears the buffer.
+
+```hcl
+data "turingpi_uart" "node1" {
+  node = 1
+}
+
+output "node1_output" {
+  value = data.turingpi_uart.node1.output
+}
+```
+
 ## Resources
 
 ### turingpi_power
 
-Control node power state.
+Control node power state with on, off, and reset support.
 
 ```hcl
 resource "turingpi_power" "node1" {
   node  = 1       # Node ID (1-4)
-  state = true    # true = on, false = off
+  state = "on"    # "on", "off", or "reset"
+}
+
+# Reset (reboot) a node
+resource "turingpi_power" "node2_reset" {
+  node  = 2
+  state = "reset"
 }
 ```
 
@@ -80,6 +155,70 @@ Flash firmware to a node. Changes to `node` or `firmware_file` trigger resource 
 resource "turingpi_flash" "node1" {
   node          = 1
   firmware_file = "/path/to/firmware.img"
+}
+```
+
+### turingpi_usb
+
+Manage USB routing between nodes and the USB-A connector or BMC.
+
+```hcl
+resource "turingpi_usb" "node1" {
+  node  = 1           # Node ID (1-4)
+  mode  = "host"      # "host" or "device"
+  route = "usb-a"     # "usb-a" or "bmc" (default: "usb-a")
+}
+```
+
+### turingpi_network_reset
+
+Trigger a network switch reset. Useful for recovering network connectivity after node power changes or firmware updates.
+
+```hcl
+resource "turingpi_network_reset" "switch" {
+  triggers = {
+    # Reset network when node power changes
+    node_states = join(",", [for k, v in turingpi_power.nodes : "${k}:${v.current_state}"])
+  }
+}
+```
+
+### turingpi_bmc_firmware
+
+Upgrade the BMC firmware. Supports uploading from Terraform host or using a file on the BMC filesystem.
+
+```hcl
+resource "turingpi_bmc_firmware" "upgrade" {
+  firmware_file = "/path/to/bmc-firmware.swu"
+  timeout       = 300
+}
+
+# Or use a file already on the BMC
+resource "turingpi_bmc_firmware" "upgrade_local" {
+  firmware_file = "/tmp/firmware.swu"
+  bmc_local     = true
+}
+```
+
+### turingpi_uart
+
+Write commands to a node's UART (serial console).
+
+```hcl
+resource "turingpi_uart" "node1_cmd" {
+  node    = 1
+  command = "echo 'Hello from Terraform'\n"
+}
+```
+
+### turingpi_bmc_reboot
+
+Trigger a BMC reboot with optional readiness wait.
+
+```hcl
+resource "turingpi_bmc_reboot" "maintenance" {
+  wait_for_ready = true
+  ready_timeout  = 120
 }
 ```
 
