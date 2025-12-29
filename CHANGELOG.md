@@ -7,6 +7,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.3] - 2025-12-29
+
+### Added
+- **New Resource**
+  - `turingpi_k3s_cluster` - Deploy K3s Kubernetes clusters on pre-flashed Turing Pi nodes
+    - K3s server installation on control plane via SSH
+    - K3s agent installation on worker nodes
+    - MetalLB load balancer deployment with configurable IP range
+    - NGINX Ingress controller deployment
+    - Kubeconfig output to file and Terraform state
+    - Cluster token generation and management
+    - Cluster uninstall on destroy
+
+- **Infrastructure (v1.1.2)**
+  - `provider/ssh_client.go` - SSH client interface with key-based and password authentication
+  - `provider/cluster_helpers.go` - WaitForSSH, RunSSHCommand utilities
+  - `provider/kubeconfig.go` - LoadKubeconfig, WaitForKubeAPI, ExtractClusterEndpoint
+  - `provider/helm_client.go` - Helm client using mittwald/go-helm-client for addon deployment
+  - `provider/k3s_provisioner.go` - K3s installation logic via SSH
+
+- **Documentation**
+  - `docs/resources/k3s_cluster.md` - K3s cluster resource documentation
+  - `examples/k3s-cluster/` - Example configuration with MetalLB and Ingress
+
+### Security
+- Updated `github.com/containerd/containerd` from v1.7.28 to v1.7.29
+  - Fixed local privilege escalation via wide permissions on CRI directory (high)
+  - Fixed host memory exhaustion through Attach goroutine leak (medium)
+
 ## [1.1.1] - 2025-12-29
 
 ### Added
@@ -25,10 +54,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `TODO.md` - Implementation milestones (v1.1.2 - v1.1.5)
 
 ### Planned
-- v1.1.2: Cluster helper infrastructure (SSH, Helm, kubeconfig management)
-- v1.1.3: `turingpi_k3s_cluster` resource with NPU support via custom Armbian
 - v1.1.4: `turingpi_talos_cluster` resource with Talos Image Factory integration
-- v1.1.5: Cluster upgrades, backups, and multi-cluster management
+- v1.1.5: K3s enhancements (NPU support, Longhorn storage, cluster upgrades)
 
 ## [1.1.0] - 2025-12-29
 
@@ -171,7 +198,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Release automation workflow with GoReleaser
 - Multi-platform binaries (linux/darwin/windows, amd64/arm64)
 
-[Unreleased]: https://github.com/jfreed-dev/terraform-provider-turingpi/compare/v1.1.1...HEAD
+[Unreleased]: https://github.com/jfreed-dev/terraform-provider-turingpi/compare/v1.1.3...HEAD
+[1.1.3]: https://github.com/jfreed-dev/terraform-provider-turingpi/compare/v1.1.1...v1.1.3
 [1.1.1]: https://github.com/jfreed-dev/terraform-provider-turingpi/compare/v1.1.0...v1.1.1
 [1.1.0]: https://github.com/jfreed-dev/terraform-provider-turingpi/compare/v1.0.10...v1.1.0
 [1.0.10]: https://github.com/jfreed-dev/terraform-provider-turingpi/compare/v1.0.9...v1.0.10
