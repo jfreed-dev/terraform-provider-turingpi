@@ -20,6 +20,7 @@ export TURINGPI_ENDPOINT=https://turingpi.local  # optional
 | [basic](./basic) | Simple power control for nodes |
 | [flash-firmware](./flash-firmware) | Flash firmware to nodes |
 | [full-provisioning](./full-provisioning) | Complete node management with boot verification |
+| [k3s-cluster](./k3s-cluster) | Deploy K3s Kubernetes cluster with MetalLB and Ingress |
 
 ## Running Examples
 

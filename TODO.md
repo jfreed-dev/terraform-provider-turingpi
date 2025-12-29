@@ -27,55 +27,49 @@ This file tracks planned features and implementation tasks for the Terraform Tur
 
 ---
 
-## Milestone: v1.1.3 - K3s Cluster Module
+## Milestone: v1.1.3 - K3s Cluster Module (MVP Complete)
 
 ### Resource: `turingpi_k3s_cluster`
 
 #### Schema Definition
-- [ ] Define resource schema in `provider/resource_k3s_cluster.go`
-- [ ] Add cluster identity fields (name)
-- [ ] Add image configuration (path, source type)
-- [ ] Add control plane node configuration
-- [ ] Add worker nodes configuration (list)
-- [ ] Add K3s version and network settings
-- [ ] Add addon toggles (metallb, longhorn, prometheus, etc.)
-- [ ] Add NPU/RKNN configuration options
-- [ ] Add timeout configurations
+- [x] Define resource schema in `provider/resource_k3s_cluster.go`
+- [x] Add cluster identity fields (name)
+- [ ] Add image configuration (path, source type) - deferred to v1.1.5
+- [x] Add control plane node configuration
+- [x] Add worker nodes configuration (list)
+- [x] Add K3s version and network settings
+- [x] Add addon toggles (metallb, ingress)
+- [ ] Add NPU/RKNN configuration options - deferred to v1.1.5
+- [x] Add timeout configurations
 
-#### Node Provisioning
-- [ ] Integrate with existing `turingpi_node` flash logic
-- [ ] Implement parallel node flashing
-- [ ] Add boot verification using UART monitoring
-- [ ] Implement SSH-based OS bootstrap
-  - [ ] Package installation
-  - [ ] Kernel module loading (br_netfilter, overlay, iscsi_tcp)
-  - [ ] Sysctl configuration for K3s
-  - [ ] Swap disable
-  - [ ] Hostname configuration
+#### Node Provisioning (Assumes Pre-flashed Nodes)
+- [ ] Integrate with existing `turingpi_node` flash logic - deferred to v1.1.5
+- [ ] Implement parallel node flashing - deferred to v1.1.5
+- [ ] Add boot verification using UART monitoring - deferred to v1.1.5
+- [x] Implement SSH-based OS bootstrap (swap disable)
 
-#### Storage Setup
+#### Storage Setup - Deferred to v1.1.5
 - [ ] Detect NVMe devices on nodes
 - [ ] Partition and format NVMe for Longhorn
 - [ ] Create mount points and symlinks
 - [ ] Configure iSCSI for Longhorn
 
 #### K3s Installation
-- [ ] Implement K3s server installation on control plane
-- [ ] Generate K3s config.yaml from template
-- [ ] Extract node-token after server start
-- [ ] Implement K3s agent installation on workers
-- [ ] Configure agent with server URL and token
-- [ ] Wait for all nodes to reach Ready state
+- [x] Implement K3s server installation on control plane
+- [x] Extract node-token after server start
+- [x] Implement K3s agent installation on workers
+- [x] Configure agent with server URL and token
+- [x] Wait for all nodes to reach Ready state
 
 #### Addon Deployment
-- [ ] Deploy MetalLB with IPAddressPool configuration
-- [ ] Deploy NGINX Ingress with LoadBalancer service
-- [ ] Deploy Longhorn with NVMe storage class
-- [ ] Deploy Prometheus stack (optional)
-- [ ] Deploy Portainer agent (optional)
-- [ ] Create Ingress resources for addon UIs
+- [x] Deploy MetalLB with IPAddressPool configuration
+- [x] Deploy NGINX Ingress with LoadBalancer service
+- [ ] Deploy Longhorn with NVMe storage class - deferred to v1.1.5
+- [ ] Deploy Prometheus stack (optional) - deferred to v1.1.5
+- [ ] Deploy Portainer agent (optional) - deferred to v1.1.5
+- [ ] Create Ingress resources for addon UIs - deferred to v1.1.5
 
-#### NPU Support (RK3588)
+#### NPU Support (RK3588) - Deferred to v1.1.5
 - [ ] Detect vendor kernel (6.1.x) for NPU compatibility
 - [ ] Install RKNN-Toolkit2 runtime
 - [ ] Install RKNN-LLM library
@@ -84,20 +78,19 @@ This file tracks planned features and implementation tasks for the Terraform Tur
 - [ ] Verify NPU functionality (/sys/kernel/debug/rknpu/version)
 
 #### State Management
-- [ ] Track cluster state (bootstrapping, ready, degraded)
-- [ ] Handle partial failures gracefully
-- [ ] Implement cluster update logic
-- [ ] Implement cluster destroy with cleanup
+- [x] Track cluster state (bootstrapping, ready, degraded)
+- [ ] Handle partial failures gracefully - basic implementation
+- [ ] Implement cluster update logic - deferred to v1.1.5
+- [x] Implement cluster destroy with cleanup
 
 #### Testing
-- [ ] Unit tests for schema validation
-- [ ] Unit tests for config generation
-- [ ] Mock tests for provisioning logic
+- [x] Unit tests for schema validation
+- [x] Mock tests for provisioning logic
 - [ ] Integration tests with real hardware (manual)
 
 #### Documentation
-- [ ] Create `docs/resources/k3s_cluster.md`
-- [ ] Create `examples/k3s-cluster/` with full example
+- [x] Create `docs/resources/k3s_cluster.md`
+- [x] Create `examples/k3s-cluster/` with full example
 - [ ] Add K3s deployment guide
 
 ---

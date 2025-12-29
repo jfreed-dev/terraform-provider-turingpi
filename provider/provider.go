@@ -60,6 +60,7 @@ func Provider() *schema.Provider {
 			"turingpi_node_to_msd":    resourceNodeToMSD(),
 			"turingpi_clear_usb_boot": resourceClearUSBBoot(),
 			"turingpi_bmc_reload":     resourceBMCReload(),
+			"turingpi_k3s_cluster":    resourceK3sCluster(),
 		},
 		DataSourcesMap: map[string]*schema.Resource{
 			"turingpi_info":   dataSourceInfo(),
