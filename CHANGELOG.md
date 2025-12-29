@@ -7,6 +7,47 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.2.1] - 2025-12-29
+
+### Added
+- Related modules section in provider documentation (`docs/index.md`)
+- Cross-references between provider and modules on Terraform Registry
+- GitHub topics for discoverability (terraform, turingpi, kubernetes, talos, homelab)
+
+### Changed
+- Updated GitHub repo descriptions to link provider and modules
+- Updated provider version references in documentation to v1.2.0
+
+## [1.2.0] - 2025-12-29
+
+### Deprecated
+- `turingpi_k3s_cluster` resource - Will be removed in v2.0.0
+  - Migrate to [terraform-turingpi-modules](https://registry.terraform.io/modules/jfreed-dev/modules/turingpi)
+- `turingpi_talos_cluster` resource - Will be removed in v2.0.0
+  - Migrate to [terraform-turingpi-modules](https://registry.terraform.io/modules/jfreed-dev/modules/turingpi)
+
+### Added
+- **New pkg/ Subpackages** - Extracted reusable provisioner code
+  - `pkg/ssh/` - SSH client interface and helpers
+  - `pkg/helm/` - Helm client interface for chart deployment
+  - `pkg/kubeconfig/` - Kubeconfig utilities
+  - `pkg/k3s/` - K3s cluster provisioner
+  - `pkg/talos/` - Talos cluster provisioner
+
+- **Terraform Modules** - Published to [Terraform Registry](https://registry.terraform.io/modules/jfreed-dev/modules/turingpi)
+  - `modules/flash-nodes` - Flash firmware to Turing Pi nodes
+  - `modules/talos-cluster` - Deploy Talos Kubernetes cluster (native Talos provider)
+  - `modules/addons/metallb` - MetalLB load balancer
+  - `modules/addons/ingress-nginx` - NGINX Ingress controller
+
+- **Documentation**
+  - `docs/MIGRATION.md` - Migration guide from deprecated resources to modules
+  - Updated README with modules reference
+
+### Changed
+- Cluster resources now use extracted pkg/ subpackages internally
+- Deprecation warnings displayed when using cluster resources
+
 ## [1.1.4] - 2025-12-29
 
 ### Added
@@ -228,7 +269,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Release automation workflow with GoReleaser
 - Multi-platform binaries (linux/darwin/windows, amd64/arm64)
 
-[Unreleased]: https://github.com/jfreed-dev/terraform-provider-turingpi/compare/v1.1.4...HEAD
+[Unreleased]: https://github.com/jfreed-dev/terraform-provider-turingpi/compare/v1.2.1...HEAD
+[1.2.1]: https://github.com/jfreed-dev/terraform-provider-turingpi/compare/v1.2.0...v1.2.1
+[1.2.0]: https://github.com/jfreed-dev/terraform-provider-turingpi/compare/v1.1.4...v1.2.0
 [1.1.4]: https://github.com/jfreed-dev/terraform-provider-turingpi/compare/v1.1.3...v1.1.4
 [1.1.3]: https://github.com/jfreed-dev/terraform-provider-turingpi/compare/v1.1.1...v1.1.3
 [1.1.1]: https://github.com/jfreed-dev/terraform-provider-turingpi/compare/v1.1.0...v1.1.1
