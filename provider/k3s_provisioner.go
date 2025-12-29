@@ -183,9 +183,8 @@ func (p *K3sProvisioner) InstallK3sAgent(ctx context.Context, node NodeConfig, s
 	output, _ := p.runCommand(node, "test -f /usr/local/bin/k3s && echo 'installed' || echo 'not_installed'")
 	if strings.TrimSpace(output) == "installed" {
 		// K3s already installed, just ensure it's running
-		if _, err := p.runCommand(node, "systemctl start k3s-agent"); err != nil {
-			// Ignore error - might not be configured as agent yet
-		}
+		// Ignore error - might not be configured as agent yet
+		_, _ = p.runCommand(node, "systemctl start k3s-agent")
 		return nil
 	}
 
