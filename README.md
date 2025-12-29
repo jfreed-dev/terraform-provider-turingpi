@@ -32,8 +32,12 @@ For cluster deployment, we recommend using the composable [terraform-turingpi-mo
 |--------|-------------|
 | `flash-nodes` | Flash firmware to Turing Pi nodes |
 | `talos-cluster` | Deploy Talos Kubernetes cluster (uses native Talos provider) |
+| `k3s-cluster` | Deploy K3s Kubernetes cluster on Armbian via SSH |
 | `metallb` | MetalLB load balancer addon |
 | `ingress-nginx` | NGINX Ingress controller addon |
+| `longhorn` | Distributed block storage with NVMe support |
+| `monitoring` | Prometheus, Grafana, Alertmanager stack |
+| `portainer` | Cluster management agent (CE/BE) |
 
 > **Note:** The `turingpi_k3s_cluster` and `turingpi_talos_cluster` resources are deprecated and will be removed in v2.0.0. See the [Migration Guide](docs/MIGRATION.md) for upgrade instructions.
 
@@ -54,7 +58,7 @@ terraform {
   required_providers {
     turingpi = {
       source  = "jfreed-dev/turingpi"
-      version = "1.1.1"
+      version = ">= 1.2.0"
     }
   }
 }

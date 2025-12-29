@@ -25,7 +25,7 @@ terraform {
   required_providers {
     turingpi = {
       source  = "jfreed-dev/turingpi"
-      version = "1.2.0"
+      version = ">= 1.2.0"
     }
   }
 }
@@ -92,13 +92,17 @@ For cluster deployment, use the [terraform-turingpi-modules](https://registry.te
 |--------|-------------|
 | [flash-nodes](https://registry.terraform.io/modules/jfreed-dev/modules/turingpi/latest/submodules/flash-nodes) | Flash firmware to multiple nodes |
 | [talos-cluster](https://registry.terraform.io/modules/jfreed-dev/modules/turingpi/latest/submodules/talos-cluster) | Deploy Talos Kubernetes cluster |
+| [k3s-cluster](https://registry.terraform.io/modules/jfreed-dev/modules/turingpi/latest/submodules/k3s-cluster) | Deploy K3s Kubernetes cluster on Armbian |
 | [metallb](https://registry.terraform.io/modules/jfreed-dev/modules/turingpi/latest/submodules/metallb) | MetalLB load balancer addon |
 | [ingress-nginx](https://registry.terraform.io/modules/jfreed-dev/modules/turingpi/latest/submodules/ingress-nginx) | NGINX Ingress controller addon |
+| [longhorn](https://registry.terraform.io/modules/jfreed-dev/modules/turingpi/latest/submodules/longhorn) | Distributed block storage with NVMe support |
+| [monitoring](https://registry.terraform.io/modules/jfreed-dev/modules/turingpi/latest/submodules/monitoring) | Prometheus, Grafana, Alertmanager stack |
+| [portainer](https://registry.terraform.io/modules/jfreed-dev/modules/turingpi/latest/submodules/portainer) | Cluster management agent (CE/BE) |
 
 ```hcl
 module "flash" {
   source  = "jfreed-dev/modules/turingpi//modules/flash-nodes"
-  version = "1.0.2"
+  version = ">= 1.2.0"
 
   nodes = {
     1 = { firmware = "talos-arm64.raw" }
@@ -108,7 +112,7 @@ module "flash" {
 
 module "cluster" {
   source  = "jfreed-dev/modules/turingpi//modules/talos-cluster"
-  version = "1.0.2"
+  version = ">= 1.2.0"
 
   cluster_name     = "my-cluster"
   cluster_endpoint = "https://192.168.1.101:6443"

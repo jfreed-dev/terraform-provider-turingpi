@@ -2,7 +2,7 @@ terraform {
   required_providers {
     turingpi = {
       source  = "jfreed-dev/turingpi"
-      version = "1.1.4"
+      version = ">= 1.2.0"
     }
   }
 }
