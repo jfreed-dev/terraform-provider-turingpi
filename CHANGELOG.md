@@ -7,6 +7,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.1] - 2025-12-29
+
+### Added
+- **New Resources**
+  - `turingpi_usb_boot` - Enable USB boot mode for nodes (pulls nRPIBOOT pin low for CM4s)
+  - `turingpi_node_to_msd` - Reboot node into USB Mass Storage Device mode
+  - `turingpi_clear_usb_boot` - Clear USB boot status for nodes
+  - `turingpi_bmc_reload` - Restart BMC daemon (bmcd) with readiness monitoring
+
+- **New Data Sources**
+  - `turingpi_sdcard` - MicroSD card info (total/used/free bytes, GB values, usage percentage)
+  - `turingpi_about` - BMC version info (API, daemon, buildroot, firmware, build time)
+
+- **Documentation**
+  - `docs/FUTURE_MODULES.md` - Comprehensive roadmap for K3s and Talos cluster modules
+  - `TODO.md` - Implementation milestones (v1.1.2 - v1.1.5)
+
+### Planned
+- v1.1.2: Cluster helper infrastructure (SSH, Helm, kubeconfig management)
+- v1.1.3: `turingpi_k3s_cluster` resource with NPU support via custom Armbian
+- v1.1.4: `turingpi_talos_cluster` resource with Talos Image Factory integration
+- v1.1.5: Cluster upgrades, backups, and multi-cluster management
+
 ## [1.1.0] - 2025-12-29
 
 ### Added
@@ -148,7 +171,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Release automation workflow with GoReleaser
 - Multi-platform binaries (linux/darwin/windows, amd64/arm64)
 
-[Unreleased]: https://github.com/jfreed-dev/terraform-provider-turingpi/compare/v1.1.0...HEAD
+[Unreleased]: https://github.com/jfreed-dev/terraform-provider-turingpi/compare/v1.1.1...HEAD
+[1.1.1]: https://github.com/jfreed-dev/terraform-provider-turingpi/compare/v1.1.0...v1.1.1
 [1.1.0]: https://github.com/jfreed-dev/terraform-provider-turingpi/compare/v1.0.10...v1.1.0
 [1.0.10]: https://github.com/jfreed-dev/terraform-provider-turingpi/compare/v1.0.9...v1.0.10
 [1.0.9]: https://github.com/jfreed-dev/terraform-provider-turingpi/compare/v1.0.8...v1.0.9
