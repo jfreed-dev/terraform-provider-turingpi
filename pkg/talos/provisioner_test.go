@@ -262,7 +262,7 @@ func TestProvisioner_GenerateSecrets_MockExec(t *testing.T) {
 	mockExec := func(name string, args ...string) *exec.Cmd {
 		// Simulate generating secrets
 		secretsFile := filepath.Join(tmpDir, "secrets.yaml")
-		os.WriteFile(secretsFile, []byte("secrets: test"), 0600)
+		_ = os.WriteFile(secretsFile, []byte("secrets: test"), 0600)
 		return exec.Command("true")
 	}
 
