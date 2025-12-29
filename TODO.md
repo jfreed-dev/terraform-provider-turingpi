@@ -5,11 +5,12 @@ This file tracks planned features and implementation tasks for the Terraform Tur
 ## Milestone: v1.1.2 - Foundation
 
 ### Cluster Helper Infrastructure
-- [ ] Create `provider/cluster_helpers.go` with shared utilities
-- [ ] Implement SSH connection pooling and management
-- [ ] Add `WaitForSSH()` function with configurable timeout
-- [ ] Add `WaitForKubeAPI()` function for cluster readiness checks
-- [ ] Implement kubeconfig parsing and validation
+- [x] Create `provider/cluster_helpers.go` with shared utilities
+- [x] Create `provider/ssh_client.go` with SSHClient interface (key-based auth)
+- [x] Add `WaitForSSH()` function with configurable timeout
+- [x] Add `WaitForKubeAPI()` function for cluster readiness checks
+- [x] Create `provider/kubeconfig.go` with parsing and validation
+- [x] Add unit tests with mock SSH client
 
 ### Helm Integration
 - [ ] Create `provider/helm_client.go` for Helm chart deployment
@@ -19,7 +20,7 @@ This file tracks planned features and implementation tasks for the Terraform Tur
 - [ ] Add wait-for-ready logic for Helm releases
 
 ### Testing Infrastructure
-- [ ] Add mock SSH server for testing
+- [x] Add mock SSH client for testing (MockSSHClient in cluster_helpers_test.go)
 - [ ] Add mock Kubernetes API for testing
 - [ ] Create cluster integration test framework
 
