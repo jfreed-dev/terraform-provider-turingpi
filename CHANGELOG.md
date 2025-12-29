@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.0] - 2025-12-29
+
 ### Added
 - **New Data Sources**
   - `turingpi_info` - BMC version, network interfaces, storage devices, and node power status
@@ -146,7 +148,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Release automation workflow with GoReleaser
 - Multi-platform binaries (linux/darwin/windows, amd64/arm64)
 
-[Unreleased]: https://github.com/jfreed-dev/terraform-provider-turingpi/compare/v1.0.10...HEAD
+[Unreleased]: https://github.com/jfreed-dev/terraform-provider-turingpi/compare/v1.1.0...HEAD
+[1.1.0]: https://github.com/jfreed-dev/terraform-provider-turingpi/compare/v1.0.10...v1.1.0
 [1.0.10]: https://github.com/jfreed-dev/terraform-provider-turingpi/compare/v1.0.9...v1.0.10
 [1.0.9]: https://github.com/jfreed-dev/terraform-provider-turingpi/compare/v1.0.8...v1.0.9
 [1.0.8]: https://github.com/jfreed-dev/terraform-provider-turingpi/compare/v1.0.7...v1.0.8
