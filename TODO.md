@@ -95,77 +95,73 @@ This file tracks planned features and implementation tasks for the Terraform Tur
 
 ---
 
-## Milestone: v1.1.4 - Talos Cluster Module
+## Milestone: v1.1.4 - Talos Cluster Module ✅ COMPLETE
 
 ### Resource: `turingpi_talos_cluster`
 
-#### Talos Image Factory Integration
-- [ ] Create `provider/talos_factory_client.go`
-- [ ] Implement schematic submission to factory.talos.dev
-- [ ] Parse schematic response for image URL
-- [ ] Download and cache Talos images
-- [ ] Support custom extensions (iscsi-tools, util-linux-tools)
-- [ ] Support sbc-rockchip overlay
+#### Talos Image Factory Integration - Deferred (using talosctl instead)
+- [ ] Create `provider/talos_factory_client.go` - deferred to future release
+- [ ] Implement schematic submission to factory.talos.dev - deferred
+- [ ] Parse schematic response for image URL - deferred
+- [ ] Download and cache Talos images - deferred
+- [ ] Support custom extensions (iscsi-tools, util-linux-tools) - deferred
+- [ ] Support sbc-rockchip overlay - deferred
 
 #### Schema Definition
-- [ ] Define resource schema in `provider/resource_talos_cluster.go`
-- [ ] Add cluster identity and endpoint fields
-- [ ] Add Talos version configuration
-- [ ] Add image source options (factory, local, url)
-- [ ] Add control plane node configuration
-- [ ] Add worker nodes with NVMe configuration
-- [ ] Add Kubernetes network settings
-- [ ] Add addon toggles
+- [x] Define resource schema in `provider/resource_talos_cluster.go`
+- [x] Add cluster identity and endpoint fields
+- [x] Add Talos version configuration (optional, for reference)
+- [x] Add control plane node configuration
+- [x] Add worker nodes configuration
+- [x] Add Kubernetes network settings (install_disk)
+- [x] Add addon toggles (metallb, ingress)
 
-#### Machine Config Generation
-- [ ] Shell out to `talosctl gen secrets`
-- [ ] Shell out to `talosctl gen config`
-- [ ] Implement patch generation for:
-  - [ ] Hostnames
-  - [ ] Network interfaces
-  - [ ] NVMe disk partitioning
-  - [ ] Kubelet extra mounts
-  - [ ] Scheduling on control plane
-- [ ] Apply patches to base configs
+#### Machine Config Generation (via talosctl)
+- [x] Shell out to `talosctl gen secrets`
+- [x] Shell out to `talosctl gen config`
+- [x] Implement patch generation for:
+  - [x] Hostnames
+  - [x] Scheduling on control plane
+  - [ ] Network interfaces - deferred
+  - [ ] NVMe disk partitioning - deferred
+  - [ ] Kubelet extra mounts - deferred
+- [x] Apply patches to base configs
 
-#### Cluster Bootstrap
-- [ ] Flash Talos image to all nodes
-- [ ] Wait for nodes to enter maintenance mode
-- [ ] Apply machine configs using `talosctl apply-config --insecure`
-- [ ] Configure talosctl endpoints and nodes
-- [ ] Execute `talosctl bootstrap` (one-time)
-- [ ] Monitor cluster health with `talosctl health`
-- [ ] Extract kubeconfig with `talosctl kubeconfig`
+#### Cluster Bootstrap (assumes pre-flashed nodes)
+- [x] Apply machine configs using `talosctl apply-config --insecure`
+- [x] Configure talosctl endpoints and nodes
+- [x] Execute `talosctl bootstrap` (one-time, with safety check)
+- [x] Monitor cluster health with `talosctl health`
+- [x] Extract kubeconfig with `talosctl kubeconfig`
 
 #### Addon Deployment
-- [ ] Wait for Kubernetes API availability
-- [ ] Deploy MetalLB
-- [ ] Deploy NGINX Ingress
-- [ ] Deploy Longhorn (with privileged namespace)
-- [ ] Deploy Prometheus stack (optional)
+- [x] Wait for Kubernetes API availability
+- [x] Deploy MetalLB with IPAddressPool configuration
+- [x] Deploy NGINX Ingress with LoadBalancer service
+- [ ] Deploy Longhorn (with privileged namespace) - deferred to v1.1.5
+- [ ] Deploy Prometheus stack (optional) - deferred to v1.1.5
 
 #### State Management
-- [ ] Detect if cluster already bootstrapped (prevent re-bootstrap)
-- [ ] Track machine config versions
-- [ ] Implement config update/upgrade logic
-- [ ] Implement cluster destroy
+- [x] Detect if cluster already bootstrapped (prevent re-bootstrap via etcd check)
+- [x] Store secrets, talosconfig, kubeconfig in state
+- [ ] Track machine config versions - deferred
+- [ ] Implement config update/upgrade logic - deferred to v1.1.5
+- [x] Implement cluster destroy (reset nodes)
 
 #### NPU Limitation Handling
-- [ ] Add warning in schema about NPU unavailability
-- [ ] Document NPU limitation in resource docs
-- [ ] Suggest K3s module for NPU workloads
+- [x] Document NPU limitation in resource docs
+- [x] Suggest K3s module for NPU workloads in docs
 
 #### Testing
-- [ ] Unit tests for schema validation
-- [ ] Unit tests for factory client
-- [ ] Mock tests for talosctl interactions
+- [x] Unit tests for schema validation
+- [x] Mock tests for talosctl interactions (exec.Command interface)
 - [ ] Integration tests with real hardware (manual)
 
 #### Documentation
-- [ ] Create `docs/resources/talos_cluster.md`
-- [ ] Create `examples/talos-cluster/` with full example
-- [ ] Add Talos deployment guide
-- [ ] Document NPU limitations clearly
+- [x] Create `docs/resources/talos_cluster.md`
+- [x] Create `examples/talos-cluster/` with full example
+- [x] Document NPU limitations clearly
+- [x] Document talosctl prerequisite
 
 ---
 
@@ -205,12 +201,12 @@ This file tracks planned features and implementation tasks for the Terraform Tur
 - [ ] Document pros/cons of each approach
 - [ ] Make final recommendation
 
-### Talos Integration Options
-- [ ] Evaluate `siderolabs/terraform-provider-talos`
-- [ ] Evaluate shelling out to talosctl
-- [ ] Evaluate direct Talos API integration
-- [ ] Document pros/cons of each approach
-- [ ] Make final recommendation
+### Talos Integration Options ✅ COMPLETE
+- [x] Evaluate `siderolabs/terraform-provider-talos`
+- [x] Evaluate shelling out to talosctl
+- [x] Evaluate direct Talos API integration
+- [x] Document pros/cons of each approach
+- [x] Make final recommendation: **Shell out to talosctl** (implemented in v1.1.4)
 
 ### NPU Support Timeline
 - [ ] Monitor mainline kernel NPU driver progress
