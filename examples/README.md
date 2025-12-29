@@ -21,6 +21,7 @@ export TURINGPI_ENDPOINT=https://turingpi.local  # optional
 | [flash-firmware](./flash-firmware) | Flash firmware to nodes |
 | [full-provisioning](./full-provisioning) | Complete node management with boot verification |
 | [k3s-cluster](./k3s-cluster) | Deploy K3s Kubernetes cluster with MetalLB and Ingress |
+| [talos-cluster](./talos-cluster) | Deploy Talos Kubernetes cluster with MetalLB and Ingress |
 
 ## Running Examples
 
