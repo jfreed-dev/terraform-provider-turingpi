@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.2.2] - 2025-12-29
+
+### Changed
+- Updated provider version in README and docs to `>= 1.2.0`
+- Added k3s-cluster, longhorn, monitoring, portainer to modules list in documentation
+- Updated all examples to use `>= 1.2.0` version constraint
+- Synchronized documentation with terraform-turingpi-modules repo
+
 ## [1.2.1] - 2025-12-29
 
 ### Added
@@ -269,7 +277,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Release automation workflow with GoReleaser
 - Multi-platform binaries (linux/darwin/windows, amd64/arm64)
 
-[Unreleased]: https://github.com/jfreed-dev/terraform-provider-turingpi/compare/v1.2.1...HEAD
+[Unreleased]: https://github.com/jfreed-dev/terraform-provider-turingpi/compare/v1.2.2...HEAD
+[1.2.2]: https://github.com/jfreed-dev/terraform-provider-turingpi/compare/v1.2.1...v1.2.2
 [1.2.1]: https://github.com/jfreed-dev/terraform-provider-turingpi/compare/v1.2.0...v1.2.1
 [1.2.0]: https://github.com/jfreed-dev/terraform-provider-turingpi/compare/v1.1.4...v1.2.0
 [1.1.4]: https://github.com/jfreed-dev/terraform-provider-turingpi/compare/v1.1.3...v1.1.4
