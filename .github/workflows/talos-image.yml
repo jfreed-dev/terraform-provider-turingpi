@@ -1,0 +1,292 @@
+name: Check Talos Image
+
+on:
+  schedule:
+    # Run daily at 04:00 UTC (after potential Armbian build at 03:00)
+    - cron: '0 4 * * *'
+  workflow_dispatch:
+    inputs:
+      force_update:
+        description: 'Force update regardless of version change'
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+env:
+  # Talos Image Factory schematic for Turing RK1
+  # Includes: sbc-rockchip overlay, iscsi-tools, util-linux-tools
+  SCHEMATIC_ID: "85f683902139269fbc5a7f64ea94a694d31e0b3d94347a225223fcbd042083ae"
+  IMAGES_JSON_URL: "https://armbian-builds.techki.to/turing-rk1/images.json"
+  R2_BUCKET: "armbian-builds"
+
+jobs:
+  check-version:
+    name: Check Talos Version
+    runs-on: ubuntu-latest
+    outputs:
+      update_needed: ${{ steps.check.outputs.update_needed }}
+      upstream_version: ${{ steps.check.outputs.upstream_version }}
+      current_version: ${{ steps.check.outputs.current_version }}
+    steps:
+      - name: Get latest Talos release
+        id: check
+        run: |
+          # Fetch latest release from GitHub API
+          UPSTREAM_VERSION=$(curl -sL https://api.github.com/repos/siderolabs/talos/releases/latest | jq -r '.tag_name')
+          echo "upstream_version=$UPSTREAM_VERSION" >> $GITHUB_OUTPUT
+          echo "Latest Talos version: $UPSTREAM_VERSION"
+
+          # Get current version from images.json
+          CURRENT_VERSION=$(curl -sL "$IMAGES_JSON_URL" | jq -r '.talos.latest.version // ""')
+          echo "current_version=$CURRENT_VERSION" >> $GITHUB_OUTPUT
+          echo "Current version in R2: $CURRENT_VERSION"
+
+          # Determine if update is needed
+          if [ "$UPSTREAM_VERSION" != "$CURRENT_VERSION" ] || [ "${{ inputs.force_update }}" == "true" ]; then
+            echo "update_needed=true" >> $GITHUB_OUTPUT
+            echo "Update needed: version changed or force update requested"
+          else
+            echo "update_needed=false" >> $GITHUB_OUTPUT
+            echo "No update needed: version unchanged"
+          fi
+
+  update-image:
+    name: Update Talos Image
+    needs: check-version
+    if: needs.check-version.outputs.update_needed == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.PAT_TOKEN }}
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y jq rclone xz-utils
+
+      - name: Verify schematic configuration
+        id: schematic
+        run: |
+          echo "Verifying schematic ID: $SCHEMATIC_ID"
+          SCHEMATIC_YAML=$(curl -sL "https://factory.talos.dev/schematics/$SCHEMATIC_ID")
+          echo "Schematic configuration:"
+          echo "$SCHEMATIC_YAML"
+
+          # Verify it's for Turing RK1
+          if echo "$SCHEMATIC_YAML" | grep -q "turingrk1"; then
+            echo "Schematic verified for Turing RK1"
+          else
+            echo "ERROR: Schematic does not appear to be for Turing RK1"
+            exit 1
+          fi
+
+      - name: Download Talos image
+        id: download
+        run: |
+          VERSION="${{ needs.check-version.outputs.upstream_version }}"
+          FILENAME="metal-arm64.raw.xz"
+          SOURCE_URL="https://factory.talos.dev/image/${SCHEMATIC_ID}/${VERSION}/${FILENAME}"
+
+          echo "Downloading Talos ${VERSION} from Image Factory..."
+          echo "URL: $SOURCE_URL"
+
+          mkdir -p staging
+          curl -L --progress-bar -o "staging/${FILENAME}" "$SOURCE_URL"
+
+          # Calculate SHA256
+          SHA256=$(sha256sum "staging/${FILENAME}" | cut -d' ' -f1)
+          SIZE=$(stat -c%s "staging/${FILENAME}")
+          SIZE_HUMAN=$(numfmt --to=iec-i --suffix=B "$SIZE")
+
+          echo "sha256=$SHA256" >> $GITHUB_OUTPUT
+          echo "size=$SIZE" >> $GITHUB_OUTPUT
+          echo "filename=$FILENAME" >> $GITHUB_OUTPUT
+
+          echo "Downloaded: $FILENAME"
+          echo "Size: $SIZE_HUMAN ($SIZE bytes)"
+          echo "SHA256: $SHA256"
+
+      - name: Get Talos release metadata
+        id: metadata
+        run: |
+          VERSION="${{ needs.check-version.outputs.upstream_version }}"
+
+          # Fetch release info for additional metadata
+          RELEASE_INFO=$(curl -sL "https://api.github.com/repos/siderolabs/talos/releases/tags/${VERSION}")
+          PUBLISHED=$(echo "$RELEASE_INFO" | jq -r '.published_at')
+
+          # Extract versions from release notes (best effort)
+          RELEASE_BODY=$(echo "$RELEASE_INFO" | jq -r '.body')
+
+          # Try to extract Kubernetes version
+          K8S_VERSION=$(echo "$RELEASE_BODY" | grep -oP 'Kubernetes v?\K[0-9]+\.[0-9]+\.[0-9]+' | head -1 || echo "")
+          if [ -n "$K8S_VERSION" ]; then
+            echo "kubernetes_version=$K8S_VERSION" >> $GITHUB_OUTPUT
+          fi
+
+          # Try to extract kernel version
+          KERNEL_VERSION=$(echo "$RELEASE_BODY" | grep -oP 'Linux \K[0-9]+\.[0-9]+\.[0-9]+' | head -1 || echo "")
+          if [ -n "$KERNEL_VERSION" ]; then
+            echo "kernel_version=$KERNEL_VERSION" >> $GITHUB_OUTPUT
+          fi
+
+          echo "published_at=$PUBLISHED" >> $GITHUB_OUTPUT
+          echo "Kubernetes: ${K8S_VERSION:-unknown}"
+          echo "Kernel: ${KERNEL_VERSION:-unknown}"
+
+      - name: Configure rclone for Cloudflare R2
+        run: |
+          mkdir -p ~/.config/rclone
+          cat > ~/.config/rclone/rclone.conf << EOF
+          [r2]
+          type = s3
+          provider = Cloudflare
+          access_key_id = ${{ secrets.R2_ACCESS_KEY_ID }}
+          secret_access_key = ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          endpoint = ${{ secrets.R2_ENDPOINT }}
+          region = auto
+          EOF
+
+      - name: Upload to Cloudflare R2
+        id: upload
+        run: |
+          VERSION="${{ needs.check-version.outputs.upstream_version }}"
+          FILENAME="${{ steps.download.outputs.filename }}"
+
+          echo "Uploading to R2: turing-rk1/talos/${VERSION}/${FILENAME}"
+          rclone copy "staging/${FILENAME}" "r2:${R2_BUCKET}/turing-rk1/talos/${VERSION}/" \
+            --progress \
+            --s3-chunk-size=64M
+
+          # Construct download URL
+          R2_PUBLIC_URL="${{ secrets.R2_PUBLIC_URL }}"
+          DOWNLOAD_URL="${R2_PUBLIC_URL}/turing-rk1/talos/${VERSION}/${FILENAME}"
+          echo "download_url=$DOWNLOAD_URL" >> $GITHUB_OUTPUT
+          echo "Uploaded to: $DOWNLOAD_URL"
+
+      - name: Update images.json
+        run: |
+          VERSION="${{ needs.check-version.outputs.upstream_version }}"
+          CURRENT_VERSION="${{ needs.check-version.outputs.current_version }}"
+          DATE=$(date -u +%Y-%m-%d)
+          TIMESTAMP=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+
+          # Download current images.json
+          curl -sL "$IMAGES_JSON_URL" -o images.json
+
+          # Prepare history entry for previous version (if exists)
+          if [ -n "$CURRENT_VERSION" ] && [ "$CURRENT_VERSION" != "null" ]; then
+            PREV_URL=$(jq -r '.talos.latest.download_url // ""' images.json)
+            PREV_DATE=$(jq -r '.talos.latest.check_date // ""' images.json)
+          fi
+
+          # Update images.json
+          jq --arg version "$VERSION" \
+             --arg schematic "$SCHEMATIC_ID" \
+             --arg k8s_version "${{ steps.metadata.outputs.kubernetes_version }}" \
+             --arg kernel_version "${{ steps.metadata.outputs.kernel_version }}" \
+             --arg date "$DATE" \
+             --arg timestamp "$TIMESTAMP" \
+             --arg filename "${{ steps.download.outputs.filename }}" \
+             --arg size "${{ steps.download.outputs.size }}" \
+             --arg sha256 "${{ steps.download.outputs.sha256 }}" \
+             --arg download_url "${{ steps.upload.outputs.download_url }}" \
+             --arg source_url "https://factory.talos.dev/image/${SCHEMATIC_ID}/${VERSION}/metal-arm64.raw.xz" \
+             --arg prev_version "$CURRENT_VERSION" \
+             --arg prev_url "$PREV_URL" \
+             --arg prev_date "$PREV_DATE" \
+          '
+          # Update timestamp
+          .updated_at = $timestamp |
+
+          # Move current to history (if exists and different)
+          (if $prev_version != "" and $prev_version != "null" and $prev_version != $version then
+            .talos.history = ([{
+              version: $prev_version,
+              check_date: $prev_date,
+              download_url: $prev_url
+            }] + (.talos.history // [])[0:9])
+          else
+            .
+          end) |
+
+          # Update latest
+          .talos.latest = {
+            version: $version,
+            schematic_id: $schematic,
+            kubernetes_version: (if $k8s_version != "" then $k8s_version else .talos.latest.kubernetes_version end),
+            kernel_version: (if $kernel_version != "" then $kernel_version else .talos.latest.kernel_version end),
+            check_date: $date,
+            filename: $filename,
+            size_bytes: ($size | tonumber),
+            sha256: $sha256,
+            source_url: $source_url,
+            download_url: $download_url
+          }
+          ' images.json > images.json.tmp && mv images.json.tmp images.json
+
+          echo "Updated images.json:"
+          cat images.json | jq '.talos'
+
+      - name: Upload updated images.json to R2
+        run: |
+          rclone copy images.json "r2:${R2_BUCKET}/turing-rk1/" --progress
+          echo "images.json uploaded to R2"
+
+      - name: Verify upload
+        run: |
+          VERSION="${{ needs.check-version.outputs.upstream_version }}"
+          DOWNLOAD_URL="${{ steps.upload.outputs.download_url }}"
+
+          echo "Verifying uploaded files..."
+
+          # Check image is accessible
+          HTTP_CODE=$(curl -sI "$DOWNLOAD_URL" | head -1 | awk '{print $2}')
+          if [ "$HTTP_CODE" = "200" ]; then
+            echo "✓ Talos image accessible at: $DOWNLOAD_URL"
+          else
+            echo "✗ Talos image not accessible (HTTP $HTTP_CODE)"
+            exit 1
+          fi
+
+          # Check images.json is updated
+          REMOTE_VERSION=$(curl -sL "$IMAGES_JSON_URL" | jq -r '.talos.latest.version')
+          if [ "$REMOTE_VERSION" = "$VERSION" ]; then
+            echo "✓ images.json updated to version: $REMOTE_VERSION"
+          else
+            echo "✗ images.json version mismatch: expected $VERSION, got $REMOTE_VERSION"
+            exit 1
+          fi
+
+      - name: Create summary
+        run: |
+          VERSION="${{ needs.check-version.outputs.upstream_version }}"
+          PREV_VERSION="${{ needs.check-version.outputs.current_version }}"
+
+          cat >> $GITHUB_STEP_SUMMARY << EOF
+          ## Talos Image Update Complete
+
+          | Property | Value |
+          |----------|-------|
+          | Previous Version | ${PREV_VERSION:-none} |
+          | New Version | ${VERSION} |
+          | Kubernetes | ${{ steps.metadata.outputs.kubernetes_version }} |
+          | Kernel | ${{ steps.metadata.outputs.kernel_version }} |
+          | Size | $(numfmt --to=iec-i --suffix=B ${{ steps.download.outputs.size }}) |
+          | SHA256 | \`${{ steps.download.outputs.sha256 }}\` |
+
+          ### Download URLs
+
+          - **Image**: ${{ steps.upload.outputs.download_url }}
+          - **Metadata**: ${IMAGES_JSON_URL}
+
+          ### Schematic Configuration
+
+          \`\`\`yaml
+          $(curl -sL "https://factory.talos.dev/schematics/$SCHEMATIC_ID")
+          \`\`\`
+          EOF
