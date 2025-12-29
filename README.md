@@ -13,11 +13,13 @@ A Terraform provider for managing Turing Pi's Baseboard Management Controller (B
 - **Power Management** - Control power state of individual compute nodes (1-4)
 - **Firmware Flashing** - Flash firmware images to nodes with automatic resource recreation
 - **BMC Firmware Upgrade** - Upgrade BMC firmware with file upload or local file support
-- **BMC Reboot** - Trigger BMC reboot with readiness monitoring
+- **BMC Reboot & Reload** - Trigger BMC reboot or daemon reload with readiness monitoring
 - **UART Access** - Read and write to node serial consoles for boot monitoring and command execution
 - **Boot Verification** - Monitor UART output with configurable patterns to verify successful boot
 - **USB Routing** - Configure USB routing between nodes and USB-A connector or BMC
+- **USB Boot Mode** - Enable USB boot mode for CM4 provisioning and MSD access
 - **Network Reset** - Trigger network switch reset for recovery after configuration changes
+- **Storage Monitoring** - Query SD card storage capacity and usage
 - **Talos Linux Support** - Built-in boot detection for Talos Linux clusters
 - **TLS Flexibility** - Skip certificate verification for self-signed or expired BMC certificates
 - **Environment Variables** - Configure provider via environment variables for CI/CD pipelines
@@ -38,7 +40,7 @@ terraform {
   required_providers {
     turingpi = {
       source  = "jfreed-dev/turingpi"
-      version = "1.1.0"
+      version = "1.1.1"
     }
   }
 }
@@ -125,6 +127,38 @@ data "turingpi_uart" "node1" {
 
 output "node1_output" {
   value = data.turingpi_uart.node1.output
+}
+```
+
+### turingpi_sdcard
+
+Retrieve microSD card storage information.
+
+```hcl
+data "turingpi_sdcard" "storage" {}
+
+output "sdcard_info" {
+  value = {
+    total_gb     = data.turingpi_sdcard.storage.total_gb
+    free_gb      = data.turingpi_sdcard.storage.free_gb
+    used_percent = data.turingpi_sdcard.storage.used_percent
+  }
+}
+```
+
+### turingpi_about
+
+Retrieve BMC daemon version information.
+
+```hcl
+data "turingpi_about" "bmc" {}
+
+output "bmc_versions" {
+  value = {
+    api      = data.turingpi_about.bmc.api_version
+    firmware = data.turingpi_about.bmc.firmware_version
+    daemon   = data.turingpi_about.bmc.daemon_version
+  }
 }
 ```
 
@@ -219,6 +253,47 @@ Trigger a BMC reboot with optional readiness wait.
 resource "turingpi_bmc_reboot" "maintenance" {
   wait_for_ready = true
   ready_timeout  = 120
+}
+```
+
+### turingpi_bmc_reload
+
+Restart the BMC daemon (softer than full reboot).
+
+```hcl
+resource "turingpi_bmc_reload" "daemon" {
+  wait_for_ready = true
+  ready_timeout  = 30
+}
+```
+
+### turingpi_usb_boot
+
+Enable USB boot mode for a node (pulls nRPIBOOT pin low for CM4).
+
+```hcl
+resource "turingpi_usb_boot" "node1" {
+  node = 1
+}
+```
+
+### turingpi_node_to_msd
+
+Reboot a node into USB Mass Storage Device mode.
+
+```hcl
+resource "turingpi_node_to_msd" "node1" {
+  node = 1
+}
+```
+
+### turingpi_clear_usb_boot
+
+Clear USB boot status for a node.
+
+```hcl
+resource "turingpi_clear_usb_boot" "node1" {
+  node = 1
 }
 ```
 
