@@ -12,7 +12,10 @@ import (
 
 func resourceK3sCluster() *schema.Resource {
 	return &schema.Resource{
-		Description:   "Deploys a K3s Kubernetes cluster on pre-flashed Turing Pi nodes",
+		Description: "Deploys a K3s Kubernetes cluster on pre-flashed Turing Pi nodes",
+		DeprecationMessage: "turingpi_k3s_cluster is deprecated and will be removed in v2.0.0. " +
+			"Use the terraform-turingpi-modules/k3s-cluster module instead. " +
+			"See: https://github.com/jfreed-dev/terraform-turingpi-modules",
 		CreateContext: resourceK3sClusterCreate,
 		ReadContext:   resourceK3sClusterRead,
 		UpdateContext: resourceK3sClusterUpdate,
