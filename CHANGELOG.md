@@ -7,6 +7,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.4] - 2025-12-29
+
+### Added
+- **New Resource**
+  - `turingpi_talos_cluster` - Deploy Talos Kubernetes clusters on pre-flashed Turing Pi nodes
+    - Control plane and worker node configuration with custom hostnames
+    - Bootstrap safety (prevents re-bootstrap by checking etcd status)
+    - MetalLB load balancer deployment with configurable IP range
+    - NGINX Ingress controller deployment
+    - Kubeconfig and talosconfig output to files and Terraform state
+    - Cluster secrets (PKI) stored in state for recovery
+    - Cluster reset on destroy
+
+- **Infrastructure**
+  - `provider/talos_provisioner.go` - Talos provisioning via talosctl CLI
+    - Interface-based exec.Command for testable design
+    - Secrets generation, config generation, patching
+    - Apply config, bootstrap, health checks, reset
+
+- **Documentation**
+  - `docs/resources/talos_cluster.md` - Talos cluster resource documentation
+  - `examples/talos-cluster/` - Example configuration with MetalLB and Ingress
+
+### Changed
+- Updated all documentation and examples to reference v1.1.4
+
+### Note
+- Requires `talosctl` binary installed on machine running Terraform
+- Talos uses mainline kernel (no Rockchip NPU driver support)
+
 ## [1.1.3] - 2025-12-29
 
 ### Added
@@ -198,7 +228,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Release automation workflow with GoReleaser
 - Multi-platform binaries (linux/darwin/windows, amd64/arm64)
 
-[Unreleased]: https://github.com/jfreed-dev/terraform-provider-turingpi/compare/v1.1.3...HEAD
+[Unreleased]: https://github.com/jfreed-dev/terraform-provider-turingpi/compare/v1.1.4...HEAD
+[1.1.4]: https://github.com/jfreed-dev/terraform-provider-turingpi/compare/v1.1.3...v1.1.4
 [1.1.3]: https://github.com/jfreed-dev/terraform-provider-turingpi/compare/v1.1.1...v1.1.3
 [1.1.1]: https://github.com/jfreed-dev/terraform-provider-turingpi/compare/v1.1.0...v1.1.1
 [1.1.0]: https://github.com/jfreed-dev/terraform-provider-turingpi/compare/v1.0.10...v1.1.0
