@@ -7,6 +7,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.3.0] - 2025-12-30
+
+### Added
+- **BMC API Compatibility** - Support for both legacy and new BMC firmware response formats
+  - Power status now handles legacy `[[nodeName, status], ...]` and new `[{"result": [...]}]` formats
+  - Added `parsePowerValue()` helper for flexible type conversion (bool, int, float, string)
+
+- **Flash Resource Implementation** - Complete rewrite of `turingpi_flash` resource
+  - Actual flash functionality via BMC API (previously stub)
+  - Automatic node power-off before flashing
+  - Streaming multipart firmware upload
+  - Real-time flash progress monitoring with status updates
+  - 25-minute timeout with configurable status polling
+
+### Changed
+- `data_source_power.go` - Uses `json.RawMessage` for flexible API response parsing
+- `resource_flash.go` - Full implementation replacing placeholder code
+
 ## [1.2.2] - 2025-12-29
 
 ### Changed
@@ -277,7 +295,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Release automation workflow with GoReleaser
 - Multi-platform binaries (linux/darwin/windows, amd64/arm64)
 
-[Unreleased]: https://github.com/jfreed-dev/terraform-provider-turingpi/compare/v1.2.2...HEAD
+[Unreleased]: https://github.com/jfreed-dev/terraform-provider-turingpi/compare/v1.3.0...HEAD
+[1.3.0]: https://github.com/jfreed-dev/terraform-provider-turingpi/compare/v1.2.2...v1.3.0
 [1.2.2]: https://github.com/jfreed-dev/terraform-provider-turingpi/compare/v1.2.1...v1.2.2
 [1.2.1]: https://github.com/jfreed-dev/terraform-provider-turingpi/compare/v1.2.0...v1.2.1
 [1.2.0]: https://github.com/jfreed-dev/terraform-provider-turingpi/compare/v1.1.4...v1.2.0
