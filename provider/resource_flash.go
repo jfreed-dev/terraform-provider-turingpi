@@ -69,7 +69,7 @@ func resourceFlashCreate(d *schema.ResourceData, meta interface{}) error {
 	if err != nil {
 		return fmt.Errorf("failed to open firmware file: %w", err)
 	}
-	defer file.Close()
+	defer func() { _ = file.Close() }()
 
 	fileInfo, err := file.Stat()
 	if err != nil {
@@ -101,7 +101,7 @@ func resourceFlashCreate(d *schema.ResourceData, meta interface{}) error {
 	if err != nil {
 		return fmt.Errorf("flash initiation failed: %w", err)
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	if resp.StatusCode != http.StatusOK {
 		body, _ := io.ReadAll(resp.Body)
@@ -140,8 +140,8 @@ func resourceFlashCreate(d *schema.ResourceData, meta interface{}) error {
 	// Start a goroutine to write the multipart form data
 	errChan := make(chan error, 1)
 	go func() {
-		defer pw.Close()
-		defer writer.Close()
+		defer func() { _ = pw.Close() }()
+		defer func() { _ = writer.Close() }()
 
 		part, err := writer.CreateFormFile("file", firmwarePath)
 		if err != nil {
@@ -155,7 +155,7 @@ func resourceFlashCreate(d *schema.ResourceData, meta interface{}) error {
 			errChan <- fmt.Errorf("failed to open firmware file for upload: %w", err)
 			return
 		}
-		defer uploadFile.Close()
+		defer func() { _ = uploadFile.Close() }()
 
 		if _, err := io.Copy(part, uploadFile); err != nil {
 			errChan <- fmt.Errorf("failed to copy firmware data: %w", err)
@@ -177,7 +177,7 @@ func resourceFlashCreate(d *schema.ResourceData, meta interface{}) error {
 	if err != nil {
 		return fmt.Errorf("firmware upload failed: %w", err)
 	}
-	defer uploadResp.Body.Close()
+	defer func() { _ = uploadResp.Body.Close() }()
 
 	// Check for errors from the goroutine
 	if uploadErr := <-errChan; uploadErr != nil {
@@ -242,7 +242,7 @@ func getFlashStatus(endpoint, token string) (*flashStatusResponse, error) {
 	if err != nil {
 		return nil, fmt.Errorf("request failed: %w", err)
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	if resp.StatusCode != http.StatusOK {
 		body, _ := io.ReadAll(resp.Body)
