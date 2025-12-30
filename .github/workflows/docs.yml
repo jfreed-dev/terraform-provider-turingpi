@@ -22,13 +22,13 @@ jobs:
   terraform-docs:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: actions/checkout@v4
         with:
           ref: ${{ github.event.pull_request.head.ref }}
           repository: ${{ github.event.pull_request.head.repo.full_name }}
 
       - name: Generate docs for examples
-        uses: terraform-docs/gh-actions@aeae0038ed47a547e0c0571c32b40f2f6b4b0e6a # v1.3.0
+        uses: terraform-docs/gh-actions@v1
         with:
           working-dir: examples/basic,examples/flash-firmware,examples/full-provisioning,examples/talos-cluster,examples/k3s-cluster
           output-file: README.md
