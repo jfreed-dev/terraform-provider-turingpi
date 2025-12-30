@@ -31,9 +31,9 @@ rule "terraform_documented_variables" {
   enabled = true
 }
 
-# Standard file naming
+# Standard file naming (disabled - examples are not full modules)
 rule "terraform_standard_module_structure" {
-  enabled = true
+  enabled = false
 }
 
 # Require version constraints (disabled for examples - users choose their TF version)
