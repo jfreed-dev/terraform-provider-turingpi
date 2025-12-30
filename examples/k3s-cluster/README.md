@@ -50,3 +50,85 @@ kubectl get nodes
 | `api_endpoint` | Kubernetes API server URL |
 | `cluster_status` | Current cluster status |
 | `kubeconfig_path` | Local path to kubeconfig file |
+
+<!-- BEGIN_TF_DOCS -->
+
+
+## Usage
+
+## Requirements
+
+| Name | Version |
+|------|---------|
+| <a name="requirement_turingpi"></a> [turingpi](#requirement\_turingpi) | >= 1.2.0 |
+
+## Providers
+
+| Name | Version |
+|------|---------|
+| <a name="provider_turingpi"></a> [turingpi](#provider\_turingpi) | >= 1.2.0 |
+
+## Modules
+
+No modules.
+
+## Resources
+
+| Name | Type |
+|------|------|
+| [turingpi_k3s_cluster.cluster](https://registry.terraform.io/providers/jfreed-dev/turingpi/latest/docs/resources/k3s_cluster) | resource |
+
+## Inputs
+
+| Name | Description | Type | Default | Required |
+|------|-------------|------|---------|:--------:|
+| <a name="input_control_plane_ip"></a> [control\_plane\_ip](#input\_control\_plane\_ip) | IP address of the control plane node | `string` | `"10.10.88.73"` | no |
+| <a name="input_ingress_ip"></a> [ingress\_ip](#input\_ingress\_ip) | IP address for NGINX Ingress controller | `string` | `"10.10.88.80"` | no |
+| <a name="input_k3s_version"></a> [k3s\_version](#input\_k3s\_version) | K3s version to install (empty for latest stable) | `string` | `""` | no |
+| <a name="input_metallb_ip_range"></a> [metallb\_ip\_range](#input\_metallb\_ip\_range) | IP range for MetalLB load balancer | `string` | `"10.10.88.80-10.10.88.89"` | no |
+| <a name="input_ssh_key_path"></a> [ssh\_key\_path](#input\_ssh\_key\_path) | Path to SSH private key file | `string` | `"~/.ssh/id_rsa"` | no |
+| <a name="input_ssh_user"></a> [ssh\_user](#input\_ssh\_user) | SSH username for node access | `string` | `"root"` | no |
+| <a name="input_worker_ips"></a> [worker\_ips](#input\_worker\_ips) | List of worker node IP addresses | `list(string)` | <pre>[<br/>  "10.10.88.74",<br/>  "10.10.88.75",<br/>  "10.10.88.76"<br/>]</pre> | no |
+
+## Outputs
+
+| Name | Description |
+|------|-------------|
+| <a name="output_api_endpoint"></a> [api\_endpoint](#output\_api\_endpoint) | Kubernetes API server endpoint |
+| <a name="output_cluster_status"></a> [cluster\_status](#output\_cluster\_status) | Current status of the cluster |
+| <a name="output_kubeconfig"></a> [kubeconfig](#output\_kubeconfig) | Kubeconfig content for accessing the cluster |
+| <a name="output_kubeconfig_path"></a> [kubeconfig\_path](#output\_kubeconfig\_path) | Path to the kubeconfig file |
+
+## Inputs
+
+| Name | Description | Type | Default | Required |
+|------|-------------|------|---------|:--------:|
+| <a name="input_control_plane_ip"></a> [control\_plane\_ip](#input\_control\_plane\_ip) | IP address of the control plane node | `string` | `"10.10.88.73"` | no |
+| <a name="input_ingress_ip"></a> [ingress\_ip](#input\_ingress\_ip) | IP address for NGINX Ingress controller | `string` | `"10.10.88.80"` | no |
+| <a name="input_k3s_version"></a> [k3s\_version](#input\_k3s\_version) | K3s version to install (empty for latest stable) | `string` | `""` | no |
+| <a name="input_metallb_ip_range"></a> [metallb\_ip\_range](#input\_metallb\_ip\_range) | IP range for MetalLB load balancer | `string` | `"10.10.88.80-10.10.88.89"` | no |
+| <a name="input_ssh_key_path"></a> [ssh\_key\_path](#input\_ssh\_key\_path) | Path to SSH private key file | `string` | `"~/.ssh/id_rsa"` | no |
+| <a name="input_ssh_user"></a> [ssh\_user](#input\_ssh\_user) | SSH username for node access | `string` | `"root"` | no |
+| <a name="input_worker_ips"></a> [worker\_ips](#input\_worker\_ips) | List of worker node IP addresses | `list(string)` | <pre>[<br/>  "10.10.88.74",<br/>  "10.10.88.75",<br/>  "10.10.88.76"<br/>]</pre> | no |
+
+## Outputs
+
+| Name | Description |
+|------|-------------|
+| <a name="output_api_endpoint"></a> [api\_endpoint](#output\_api\_endpoint) | Kubernetes API server endpoint |
+| <a name="output_cluster_status"></a> [cluster\_status](#output\_cluster\_status) | Current status of the cluster |
+| <a name="output_kubeconfig"></a> [kubeconfig](#output\_kubeconfig) | Kubeconfig content for accessing the cluster |
+| <a name="output_kubeconfig_path"></a> [kubeconfig\_path](#output\_kubeconfig\_path) | Path to the kubeconfig file |
+
+## Providers
+
+| Name | Version |
+|------|---------|
+| <a name="provider_turingpi"></a> [turingpi](#provider\_turingpi) | >= 1.2.0 |
+
+## Requirements
+
+| Name | Version |
+|------|---------|
+| <a name="requirement_turingpi"></a> [turingpi](#requirement\_turingpi) | >= 1.2.0 |
+<!-- END_TF_DOCS -->

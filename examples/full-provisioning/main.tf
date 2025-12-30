@@ -24,7 +24,7 @@ variable "boot_timeout" {
 variable "boot_pattern" {
   description = "Pattern to detect in UART output for boot verification"
   type        = string
-  default     = "login:"  # Use "machine is running and ready" for Talos Linux
+  default     = "login:" # Use "machine is running and ready" for Talos Linux
 }
 
 # Fully provision node 1 with firmware and boot verification

@@ -38,3 +38,74 @@ terraform apply -var="boot_timeout=180"
 ## Boot Verification
 
 When `boot_check = true`, the provider monitors UART output for a login prompt. This ensures the node has fully booted before Terraform continues. The `login_prompt_timeout` controls how long to wait (default: 60 seconds).
+
+<!-- BEGIN_TF_DOCS -->
+
+
+## Usage
+
+## Requirements
+
+| Name | Version |
+|------|---------|
+| <a name="requirement_turingpi"></a> [turingpi](#requirement\_turingpi) | >= 1.2.0 |
+
+## Providers
+
+| Name | Version |
+|------|---------|
+| <a name="provider_turingpi"></a> [turingpi](#provider\_turingpi) | >= 1.2.0 |
+
+## Modules
+
+No modules.
+
+## Resources
+
+| Name | Type |
+|------|------|
+| [turingpi_node.node1](https://registry.terraform.io/providers/jfreed-dev/turingpi/latest/docs/resources/node) | resource |
+| [turingpi_node.node2](https://registry.terraform.io/providers/jfreed-dev/turingpi/latest/docs/resources/node) | resource |
+| [turingpi_node.node3](https://registry.terraform.io/providers/jfreed-dev/turingpi/latest/docs/resources/node) | resource |
+| [turingpi_node.node4](https://registry.terraform.io/providers/jfreed-dev/turingpi/latest/docs/resources/node) | resource |
+
+## Inputs
+
+| Name | Description | Type | Default | Required |
+|------|-------------|------|---------|:--------:|
+| <a name="input_boot_pattern"></a> [boot\_pattern](#input\_boot\_pattern) | Pattern to detect in UART output for boot verification | `string` | `"login:"` | no |
+| <a name="input_boot_timeout"></a> [boot\_timeout](#input\_boot\_timeout) | Timeout in seconds to wait for boot completion | `number` | `120` | no |
+| <a name="input_firmware_path"></a> [firmware\_path](#input\_firmware\_path) | Path to the firmware image file | `string` | `""` | no |
+
+## Outputs
+
+| Name | Description |
+|------|-------------|
+| <a name="output_node_status"></a> [node\_status](#output\_node\_status) | n/a |
+
+## Inputs
+
+| Name | Description | Type | Default | Required |
+|------|-------------|------|---------|:--------:|
+| <a name="input_boot_pattern"></a> [boot\_pattern](#input\_boot\_pattern) | Pattern to detect in UART output for boot verification | `string` | `"login:"` | no |
+| <a name="input_boot_timeout"></a> [boot\_timeout](#input\_boot\_timeout) | Timeout in seconds to wait for boot completion | `number` | `120` | no |
+| <a name="input_firmware_path"></a> [firmware\_path](#input\_firmware\_path) | Path to the firmware image file | `string` | `""` | no |
+
+## Outputs
+
+| Name | Description |
+|------|-------------|
+| <a name="output_node_status"></a> [node\_status](#output\_node\_status) | n/a |
+
+## Providers
+
+| Name | Version |
+|------|---------|
+| <a name="provider_turingpi"></a> [turingpi](#provider\_turingpi) | >= 1.2.0 |
+
+## Requirements
+
+| Name | Version |
+|------|---------|
+| <a name="requirement_turingpi"></a> [turingpi](#requirement\_turingpi) | >= 1.2.0 |
+<!-- END_TF_DOCS -->

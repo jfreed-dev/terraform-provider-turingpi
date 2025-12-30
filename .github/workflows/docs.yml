@@ -33,14 +33,12 @@ jobs:
           working-dir: examples/basic,examples/flash-firmware,examples/full-provisioning,examples/talos-cluster,examples/k3s-cluster
           output-file: README.md
           output-method: inject
-          git-push: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
-          git-commit-message: "docs: auto-generate terraform-docs for examples"
+          git-push: false  # Don't auto-push; branch protection requires signed commits via PRs
 
-      - name: Check for changes (PR only)
-        if: github.event_name == 'pull_request'
+      - name: Check for uncommitted changes
         run: |
           if [[ -n $(git status --porcelain) ]]; then
-            echo "::warning::terraform-docs would update documentation. Run 'terraform-docs .' in each example directory to update."
+            echo "::error::terraform-docs would update documentation. Run 'terraform-docs .' in each example directory and commit the changes."
             git diff
             exit 1
           fi

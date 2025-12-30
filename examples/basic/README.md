@@ -24,3 +24,60 @@ terraform apply
 
 - `turingpi_power.node1` - Powers on node 1
 - `turingpi_power.node2` - Powers on node 2
+
+<!-- BEGIN_TF_DOCS -->
+
+
+## Usage
+
+## Requirements
+
+| Name | Version |
+|------|---------|
+| <a name="requirement_turingpi"></a> [turingpi](#requirement\_turingpi) | >= 1.2.0 |
+
+## Providers
+
+| Name | Version |
+|------|---------|
+| <a name="provider_turingpi"></a> [turingpi](#provider\_turingpi) | >= 1.2.0 |
+
+## Modules
+
+No modules.
+
+## Resources
+
+| Name | Type |
+|------|------|
+| [turingpi_power.node1](https://registry.terraform.io/providers/jfreed-dev/turingpi/latest/docs/resources/power) | resource |
+| [turingpi_power.node2](https://registry.terraform.io/providers/jfreed-dev/turingpi/latest/docs/resources/power) | resource |
+
+## Inputs
+
+No inputs.
+
+## Outputs
+
+No outputs.
+
+## Inputs
+
+No inputs.
+
+## Outputs
+
+No outputs.
+
+## Providers
+
+| Name | Version |
+|------|---------|
+| <a name="provider_turingpi"></a> [turingpi](#provider\_turingpi) | >= 1.2.0 |
+
+## Requirements
+
+| Name | Version |
+|------|---------|
+| <a name="requirement_turingpi"></a> [turingpi](#requirement\_turingpi) | >= 1.2.0 |
+<!-- END_TF_DOCS -->
