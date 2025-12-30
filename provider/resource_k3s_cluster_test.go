@@ -308,10 +308,10 @@ func TestK3sProvisioner_InstallK3sServer(t *testing.T) {
 
 	provisioner := NewK3sProvisionerWithClientFactory(mockFactory)
 	node := NodeConfig{
-		Host:     "10.10.88.73",
-		SSHUser:  "root",
-		SSHKey:   []byte("fake-key"),
-		SSHPort:  22,
+		Host:    "10.10.88.73",
+		SSHUser: "root",
+		SSHKey:  []byte("fake-key"),
+		SSHPort: 22,
 	}
 	cfg := ClusterConfig{
 		Name:         "test-cluster",

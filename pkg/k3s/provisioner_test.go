@@ -17,13 +17,19 @@ type MockSSHClient struct {
 	CloseFunc      func() error
 
 	// Track calls for verification
-	ConnectCalls    []struct{ Host string; Port int }
+	ConnectCalls []struct {
+		Host string
+		Port int
+	}
 	RunCommandCalls []string
 	CloseCalls      int
 }
 
 func (m *MockSSHClient) Connect(host string, port int, config *ssh.Config) error {
-	m.ConnectCalls = append(m.ConnectCalls, struct{ Host string; Port int }{host, port})
+	m.ConnectCalls = append(m.ConnectCalls, struct {
+		Host string
+		Port int
+	}{host, port})
 	if m.ConnectFunc != nil {
 		return m.ConnectFunc(host, port, config)
 	}
