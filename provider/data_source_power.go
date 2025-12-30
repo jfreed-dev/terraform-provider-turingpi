@@ -12,8 +12,9 @@ import (
 )
 
 // powerStatusResponse represents the response from GET /api/bmc?opt=get&type=power
+// Supports both legacy format ([][]interface{}) and new format ([]map[string]interface{})
 type powerStatusResponse struct {
-	Response [][]interface{} `json:"response"`
+	Response json.RawMessage `json:"response"`
 }
 
 func dataSourcePower() *schema.Resource {
@@ -149,6 +150,7 @@ func getPowerStatus(endpoint, token string) (*powerStatusResponse, error) {
 }
 
 // parsePowerStatus extracts node power status from API response
+// Handles both legacy format and new BMC firmware format
 func parsePowerStatus(status *powerStatusResponse) map[string]bool {
 	nodes := make(map[string]bool)
 
@@ -158,24 +160,51 @@ func parsePowerStatus(status *powerStatusResponse) map[string]bool {
 	nodes["node3"] = false
 	nodes["node4"] = false
 
-	// Response format: [[nodeName, status], [nodeName, status], ...]
-	for _, item := range status.Response {
-		if len(item) >= 2 {
-			nodeName, nameOk := item[0].(string)
-			if nameOk {
-				var powered bool
-				switch v := item[1].(type) {
-				case bool:
-					powered = v
-				case float64:
-					powered = v == 1
-				case int:
-					powered = v == 1
+	// Try parsing as new format first: [{"result": [{"node1": "1", ...}]}]
+	var newFormat []map[string]interface{}
+	if err := json.Unmarshal(status.Response, &newFormat); err == nil {
+		for _, item := range newFormat {
+			// Check for "result" array in the response
+			if result, ok := item["result"].([]interface{}); ok {
+				for _, r := range result {
+					if nodeMap, ok := r.(map[string]interface{}); ok {
+						for nodeName, value := range nodeMap {
+							nodes[nodeName] = parsePowerValue(value)
+						}
+					}
 				}
-				nodes[nodeName] = powered
+			}
+		}
+		return nodes
+	}
+
+	// Fall back to legacy format: [[nodeName, status], [nodeName, status], ...]
+	var legacyFormat [][]interface{}
+	if err := json.Unmarshal(status.Response, &legacyFormat); err == nil {
+		for _, item := range legacyFormat {
+			if len(item) >= 2 {
+				nodeName, nameOk := item[0].(string)
+				if nameOk {
+					nodes[nodeName] = parsePowerValue(item[1])
+				}
 			}
 		}
 	}
 
 	return nodes
+}
+
+// parsePowerValue converts various types to boolean power state
+func parsePowerValue(v interface{}) bool {
+	switch val := v.(type) {
+	case bool:
+		return val
+	case float64:
+		return val == 1
+	case int:
+		return val == 1
+	case string:
+		return val == "1" || val == "true" || val == "on"
+	}
+	return false
 }

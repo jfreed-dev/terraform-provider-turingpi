@@ -1,6 +1,9 @@
 package provider
 
 import (
+	"net/http"
+	"net/http/httptest"
+	"strings"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -96,79 +99,74 @@ func TestResourceFlash_HasCRUDFunctions(t *testing.T) {
 	}
 }
 
-func TestResourceFlashCreate_SetsId(t *testing.T) {
+func TestResourceFlashCreate_FileNotFound(t *testing.T) {
 	r := resourceFlash()
 	d := r.TestResourceData()
 
 	_ = d.Set("node", 1)
-	_ = d.Set("firmware_file", "/path/to/firmware.img")
+	_ = d.Set("firmware_file", "/nonexistent/firmware.img")
 
-	err := resourceFlashCreate(d, nil)
+	config := &ProviderConfig{
+		Endpoint: "https://example.com",
+		Token:    "test-token",
+	}
+
+	err := resourceFlashCreate(d, config)
+	if err == nil {
+		t.Fatal("expected error for non-existent file")
+	}
+	if !strings.Contains(err.Error(), "failed to open firmware file") {
+		t.Errorf("expected file open error, got: %s", err)
+	}
+}
+
+func TestGetFlashStatus_Success(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		response := `{"Done": [{"secs": 100, "nanos": 123456}, 12345678]}`
+		_, _ = w.Write([]byte(response))
+	}))
+	defer server.Close()
+
+	status, err := getFlashStatus(server.URL, "test-token")
 	if err != nil {
-		t.Fatalf("unexpected error: %s", err)
+		t.Fatalf("unexpected error: %v", err)
 	}
-
-	expectedId := "node-1"
-	if d.Id() != expectedId {
-		t.Errorf("expected ID %s, got %s", expectedId, d.Id())
+	if status.Done == nil {
+		t.Error("expected Done status")
 	}
 }
 
-func TestResourceFlashCreate_DifferentNodes(t *testing.T) {
-	r := resourceFlash()
+func TestGetFlashStatus_Flashing(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		response := `{"Flashing": {"bytes_written": 5000, "total_bytes": 10000}}`
+		_, _ = w.Write([]byte(response))
+	}))
+	defer server.Close()
 
-	testCases := []struct {
-		node       int
-		expectedId string
-	}{
-		{1, "node-1"},
-		{2, "node-2"},
-		{3, "node-3"},
-		{4, "node-4"},
+	status, err := getFlashStatus(server.URL, "test-token")
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
 	}
-
-	for _, tc := range testCases {
-		t.Run(tc.expectedId, func(t *testing.T) {
-			d := r.TestResourceData()
-			_ = d.Set("node", tc.node)
-			_ = d.Set("firmware_file", "/path/to/firmware.img")
-
-			err := resourceFlashCreate(d, nil)
-			if err != nil {
-				t.Fatalf("unexpected error: %s", err)
-			}
-
-			if d.Id() != tc.expectedId {
-				t.Errorf("expected ID %s, got %s", tc.expectedId, d.Id())
-			}
-		})
+	if status.Flashing == nil {
+		t.Fatal("expected Flashing status")
+	}
+	if status.Flashing.BytesWritten != 5000 {
+		t.Errorf("expected 5000 bytes written, got %d", status.Flashing.BytesWritten)
 	}
 }
 
-func TestResourceFlashCreate_DifferentFirmwareFiles(t *testing.T) {
-	r := resourceFlash()
+func TestGetFlashStatus_APIError(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusUnauthorized)
+		_, _ = w.Write([]byte("unauthorized"))
+	}))
+	defer server.Close()
 
-	firmwareFiles := []string{
-		"/path/to/firmware.img",
-		"/another/path/firmware.bin",
-		"./relative/path/image.img",
-	}
-
-	for _, firmware := range firmwareFiles {
-		t.Run(firmware, func(t *testing.T) {
-			d := r.TestResourceData()
-			_ = d.Set("node", 1)
-			_ = d.Set("firmware_file", firmware)
-
-			err := resourceFlashCreate(d, nil)
-			if err != nil {
-				t.Fatalf("unexpected error for firmware %s: %s", firmware, err)
-			}
-
-			if d.Id() == "" {
-				t.Error("expected ID to be set")
-			}
-		})
+	_, err := getFlashStatus(server.URL, "test-token")
+	if err == nil {
+		t.Error("expected error for API failure")
 	}
 }
 

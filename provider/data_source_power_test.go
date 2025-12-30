@@ -377,8 +377,13 @@ func TestGetPowerStatus_Success(t *testing.T) {
 		t.Fatalf("unexpected error: %v", err)
 	}
 
-	if len(result.Response) != 2 {
-		t.Errorf("expected 2 response items, got %d", len(result.Response))
+	// Verify the response can be parsed correctly
+	nodeStatus := parsePowerStatus(result)
+	if !nodeStatus["node1"] {
+		t.Error("expected node1 to be on")
+	}
+	if nodeStatus["node2"] {
+		t.Error("expected node2 to be off")
 	}
 }
 
@@ -402,59 +407,60 @@ func TestParsePowerStatus(t *testing.T) {
 		expected map[string]bool
 	}{
 		{
-			name: "all_on",
+			name: "legacy_all_on",
 			response: &powerStatusResponse{
-				Response: [][]interface{}{
-					{"node1", float64(1)},
-					{"node2", float64(1)},
-					{"node3", float64(1)},
-					{"node4", float64(1)},
-				},
+				Response: []byte(`[["node1", 1], ["node2", 1], ["node3", 1], ["node4", 1]]`),
 			},
 			expected: map[string]bool{"node1": true, "node2": true, "node3": true, "node4": true},
 		},
 		{
-			name: "all_off",
+			name: "legacy_all_off",
 			response: &powerStatusResponse{
-				Response: [][]interface{}{
-					{"node1", float64(0)},
-					{"node2", float64(0)},
-					{"node3", float64(0)},
-					{"node4", float64(0)},
-				},
+				Response: []byte(`[["node1", 0], ["node2", 0], ["node3", 0], ["node4", 0]]`),
 			},
 			expected: map[string]bool{"node1": false, "node2": false, "node3": false, "node4": false},
 		},
 		{
-			name: "mixed",
+			name: "legacy_mixed",
 			response: &powerStatusResponse{
-				Response: [][]interface{}{
-					{"node1", float64(1)},
-					{"node2", float64(0)},
-					{"node3", float64(1)},
-					{"node4", float64(0)},
-				},
+				Response: []byte(`[["node1", 1], ["node2", 0], ["node3", 1], ["node4", 0]]`),
 			},
 			expected: map[string]bool{"node1": true, "node2": false, "node3": true, "node4": false},
 		},
 		{
-			name: "boolean_values",
+			name: "legacy_boolean_values",
 			response: &powerStatusResponse{
-				Response: [][]interface{}{
-					{"node1", true},
-					{"node2", false},
-					{"node3", true},
-					{"node4", false},
-				},
+				Response: []byte(`[["node1", true], ["node2", false], ["node3", true], ["node4", false]]`),
 			},
 			expected: map[string]bool{"node1": true, "node2": false, "node3": true, "node4": false},
 		},
 		{
-			name: "empty_response",
+			name: "legacy_empty_response",
 			response: &powerStatusResponse{
-				Response: [][]interface{}{},
+				Response: []byte(`[]`),
 			},
 			expected: map[string]bool{"node1": false, "node2": false, "node3": false, "node4": false},
+		},
+		{
+			name: "new_format_all_on",
+			response: &powerStatusResponse{
+				Response: []byte(`[{"result": [{"node1": "1", "node2": "1", "node3": "1", "node4": "1"}]}]`),
+			},
+			expected: map[string]bool{"node1": true, "node2": true, "node3": true, "node4": true},
+		},
+		{
+			name: "new_format_all_off",
+			response: &powerStatusResponse{
+				Response: []byte(`[{"result": [{"node1": "0", "node2": "0", "node3": "0", "node4": "0"}]}]`),
+			},
+			expected: map[string]bool{"node1": false, "node2": false, "node3": false, "node4": false},
+		},
+		{
+			name: "new_format_mixed",
+			response: &powerStatusResponse{
+				Response: []byte(`[{"result": [{"node1": "1", "node2": "0", "node3": "1", "node4": "0"}]}]`),
+			},
+			expected: map[string]bool{"node1": true, "node2": false, "node3": true, "node4": false},
 		},
 	}
 
