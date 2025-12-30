@@ -1,0 +1,49 @@
+name: TFLint
+
+on:
+  push:
+    branches: ["main"]
+    paths:
+      - 'examples/**/*.tf'
+      - '.github/workflows/tflint.yml'
+  pull_request:
+    branches: ["main"]
+    paths:
+      - 'examples/**/*.tf'
+      - '.github/workflows/tflint.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  tflint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@b9cd54a3c349d3f38e8881571d95f5a09a98f923 # v3.1.2
+        with:
+          terraform_wrapper: false
+
+      - name: Setup TFLint
+        uses: terraform-linters/setup-tflint@90f302c255ef959cbfb4bd10581afecdb7ece3e6 # v4.1.1
+        with:
+          tflint_version: latest
+
+      - name: Init TFLint
+        run: tflint --init
+
+      - name: Validate Terraform syntax
+        run: |
+          for dir in examples/*/; do
+            echo "==> Validating $dir"
+            terraform -chdir="$dir" fmt -check -diff
+          done
+
+      - name: Run TFLint
+        run: |
+          for dir in examples/*/; do
+            echo "==> Linting $dir"
+            tflint --chdir="$dir" --format=compact
+          done

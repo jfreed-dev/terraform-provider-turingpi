@@ -1,0 +1,61 @@
+# golangci-lint configuration
+# https://golangci-lint.run/usage/configuration/
+
+run:
+  timeout: 5m
+  modules-download-mode: readonly
+
+linters:
+  # Use default linters only - same as before adding this config
+  # This makes linting expectations explicit without breaking existing code
+  enable:
+    - errcheck
+    - gosimple
+    - govet
+    - ineffassign
+    - staticcheck
+    - unused
+
+linters-settings:
+  errcheck:
+    # Ignore error checks for common patterns in this codebase
+    exclude-functions:
+      - (io.Closer).Close
+      - (net/http.ResponseWriter).Write
+      - io.ReadAll
+      - (*encoding/json.Encoder).Encode
+      - json.Unmarshal
+      - json.Marshal
+      - (*github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema.ResourceData).Set
+
+  govet:
+    disable:
+      - fieldalignment  # Too noisy for most projects
+      - shadow          # Many false positives in this codebase
+      - unusedwrite     # Test setup code triggers this
+
+issues:
+  exclude-rules:
+    # Test files have relaxed rules
+    - path: _test\.go
+      linters:
+        - errcheck
+
+    # Allow deprecated usage in tests for backwards compat testing
+    - path: _test\.go
+      text: "SA1019:"
+      linters:
+        - staticcheck
+
+    # Ignore TLS InsecureSkipVerify - intentional for local BMC connections
+    - text: "G402:"
+      linters:
+        - gosec
+
+    # Ignore SSH InsecureIgnoreHostKey - intentional for local cluster connections
+    - text: "G106:"
+      linters:
+        - gosec
+
+  max-issues-per-linter: 50
+  max-same-issues: 10

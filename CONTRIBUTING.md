@@ -24,6 +24,34 @@ go test -v ./...
 go test -v -race ./...
 ```
 
+## Pre-commit Hooks
+
+This project uses [pre-commit](https://pre-commit.com/) to enforce code quality before commits reach CI.
+
+### Installation
+
+```bash
+# Install pre-commit (choose one)
+pip install pre-commit
+# or: brew install pre-commit
+# or: pipx install pre-commit
+
+# Install the hooks
+pre-commit install
+pre-commit install --hook-type commit-msg
+
+# Run against all files (optional, for first-time setup)
+pre-commit run --all-files
+```
+
+### What the hooks check
+
+- **Go**: formatting (gofmt), vetting, module tidiness, golangci-lint
+- **Terraform**: formatting, validation, TFLint, terraform-docs
+- **General**: trailing whitespace, YAML/JSON validity, large files, merge conflicts
+- **Security**: detect-secrets for accidental credential commits
+- **Commits**: conventional commit message format
+
 ## Making Changes
 
 1. Write clear, concise commit messages
@@ -101,6 +129,34 @@ If you have access to a Turing Pi 2.5:
 - Use the issue templates provided
 - Include Terraform version, provider version, and Go version
 - Provide minimal reproduction steps
+
+## Branch Protection (Maintainers)
+
+The `main` branch has protection rules configured in GitHub. Recommended settings:
+
+### Required Status Checks
+
+Enable "Require status checks to pass before merging" with these checks:
+- `build` (Go build and test)
+- `lint` (golangci-lint)
+- `gosec` (security scanning)
+- `tflint` (Terraform example validation)
+
+### Additional Protections
+
+- **Require pull request reviews**: At least 1 approving review
+- **Dismiss stale reviews**: When new commits are pushed
+- **Require review from Code Owners**: Enabled (see CODEOWNERS)
+- **Require signed commits**: Recommended for verified releases
+- **Require linear history**: Optional, keeps history clean
+- **Do not allow bypassing**: Even admins should follow the rules
+
+### Setting Up Branch Protection
+
+1. Go to **Settings > Branches > Branch protection rules**
+2. Click **Add rule** for `main`
+3. Configure the settings above
+4. Save changes
 
 ## Questions?
 
