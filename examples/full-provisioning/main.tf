@@ -59,6 +59,7 @@ resource "turingpi_node" "node4" {
 }
 
 output "node_status" {
+  description = "Power state of all provisioned nodes"
   value = {
     node1 = turingpi_node.node1.power_state
     node2 = turingpi_node.node2.power_state

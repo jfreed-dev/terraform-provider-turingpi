@@ -48,10 +48,10 @@ type flashResponse struct {
 
 // flashStatusResponse represents the BMC flash status response
 type flashStatusResponse struct {
-	Transferring *[]int64             `json:"Transferring,omitempty"`
-	Flashing     *flashingStatus      `json:"Flashing,omitempty"`
-	Done         *[]interface{}       `json:"Done,omitempty"`
-	Error        *string              `json:"Error,omitempty"`
+	Transferring *[]int64        `json:"Transferring,omitempty"`
+	Flashing     *flashingStatus `json:"Flashing,omitempty"`
+	Done         *[]interface{}  `json:"Done,omitempty"`
+	Error        *string         `json:"Error,omitempty"`
 }
 
 type flashingStatus struct {
