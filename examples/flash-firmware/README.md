@@ -40,7 +40,7 @@ terraform apply -var="firmware_path=/path/to/firmware.img"
 
 | Name | Version |
 |------|---------|
-| <a name="provider_turingpi"></a> [turingpi](#provider\_turingpi) | 1.2.3 |
+| <a name="provider_turingpi"></a> [turingpi](#provider\_turingpi) | >= 1.2.0 |
 
 ## Modules
 
@@ -77,7 +77,7 @@ No outputs.
 
 | Name | Version |
 |------|---------|
-| <a name="provider_turingpi"></a> [turingpi](#provider\_turingpi) | 1.2.3 |
+| <a name="provider_turingpi"></a> [turingpi](#provider\_turingpi) | >= 1.2.0 |
 
 ## Requirements
 
