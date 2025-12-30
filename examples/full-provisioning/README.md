@@ -81,7 +81,7 @@ No modules.
 
 | Name | Description |
 |------|-------------|
-| <a name="output_node_status"></a> [node\_status](#output\_node\_status) | n/a |
+| <a name="output_node_status"></a> [node\_status](#output\_node\_status) | Power state of all provisioned nodes |
 
 ## Inputs
 
@@ -95,7 +95,7 @@ No modules.
 
 | Name | Description |
 |------|-------------|
-| <a name="output_node_status"></a> [node\_status](#output\_node\_status) | n/a |
+| <a name="output_node_status"></a> [node\_status](#output\_node\_status) | Power state of all provisioned nodes |
 
 ## Providers
 
