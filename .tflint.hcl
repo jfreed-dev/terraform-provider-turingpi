@@ -36,9 +36,9 @@ rule "terraform_standard_module_structure" {
   enabled = true
 }
 
-# Require version constraints
+# Require version constraints (disabled for examples - users choose their TF version)
 rule "terraform_required_version" {
-  enabled = true
+  enabled = false
 }
 
 rule "terraform_required_providers" {
