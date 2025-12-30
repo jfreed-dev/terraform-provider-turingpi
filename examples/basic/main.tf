@@ -20,11 +20,11 @@ provider "turingpi" {
 # Power on node 1
 resource "turingpi_power" "node1" {
   node  = 1
-  state = true
+  state = "on"
 }
 
 # Power on node 2
 resource "turingpi_power" "node2" {
   node  = 2
-  state = true
+  state = "on"
 }

@@ -140,7 +140,7 @@ talosctl --talosconfig ./talosconfig reset \
 
 | Name | Version |
 |------|---------|
-| <a name="provider_turingpi"></a> [turingpi](#provider\_turingpi) | >= 1.2.0 |
+| <a name="provider_turingpi"></a> [turingpi](#provider\_turingpi) | 1.2.3 |
 
 ## Modules
 
@@ -198,7 +198,7 @@ No modules.
 
 | Name | Version |
 |------|---------|
-| <a name="provider_turingpi"></a> [turingpi](#provider\_turingpi) | >= 1.2.0 |
+| <a name="provider_turingpi"></a> [turingpi](#provider\_turingpi) | 1.2.3 |
 
 ## Requirements
 

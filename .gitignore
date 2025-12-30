@@ -17,6 +17,13 @@ turingpi-terraform-provider
 coverage.out
 coverage.html
 
+# Terraform
+.terraform/
+.terraform.lock.hcl
+*.tfstate
+*.tfstate.backup
+*.tfplan
+
 # Yarn lock file
 yarn.lock
 
