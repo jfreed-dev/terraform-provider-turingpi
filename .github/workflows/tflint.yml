@@ -5,11 +5,13 @@ on:
     branches: ["main"]
     paths:
       - 'examples/**/*.tf'
+      - '.tflint.hcl'
       - '.github/workflows/tflint.yml'
   pull_request:
     branches: ["main"]
     paths:
       - 'examples/**/*.tf'
+      - '.tflint.hcl'
       - '.github/workflows/tflint.yml'
 
 permissions:
