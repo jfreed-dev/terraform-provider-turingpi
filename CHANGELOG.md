@@ -7,6 +7,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **CI/CD Enhancements**
+  - TFLint workflow for validating Terraform example files
+  - terraform-docs workflow for auto-generating example documentation
+  - Trivy vulnerability and license scanning in security workflow
+  - Codecov integration for test coverage tracking
+  - Pre-commit hooks configuration (`.pre-commit-config.yaml`)
+    - Go: gofmt, go vet, go-mod-tidy, golangci-lint
+    - Terraform: terraform_fmt, terraform_tflint, terraform_docs
+    - General: trailing whitespace, end-of-file, YAML/JSON validation
+  - golangci-lint v2 configuration (`.golangci.yml`)
+  - TFLint configuration (`.tflint.hcl`)
+  - terraform-docs configuration (`.terraform-docs.yml`)
+
+- **Documentation**
+  - Branch protection guidance in CONTRIBUTING.md
+  - Pre-commit setup instructions in CONTRIBUTING.md
+  - Auto-generated README.md for all examples
+
+### Changed
+- Updated GitHub Actions to latest versions (checkout v6, upload-artifact v6)
+- Updated Helm dependency to v3.19.4
+- Fixed `state` attribute in basic example (bool `true` → string `"on"`)
+- Added Terraform files to `.gitignore` (`.terraform/`, `*.tfstate`)
+
 ## [1.3.0] - 2025-12-30
 
 ### Added
