@@ -7,6 +7,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.3.2] - 2025-01-18
+
+### Changed
+- **Dependencies**
+  - Updated all Go modules to latest versions
+  - Updated golang.org/x/crypto to v0.47.0
+  - Updated Helm to v3.19.5
+  - Updated Kubernetes client libraries to v0.35.0
+  - Updated gRPC to v1.78.0
+
+- **CI/CD**
+  - Bumped github/codeql-action to 4.31.10
+  - Bumped aquasecurity/trivy-action to 0.33.1
+  - Bumped actions/checkout to 6.0.1
+  - Bumped terraform-linters/setup-tflint to 6
+  - Bumped codecov/codecov-action to 5.5.2
+
+### Added
+- Pull request template with Terraform provider-specific checklist
+- Enhanced .gitignore with security patterns for keys, kubeconfig, talosconfig
+
 ## [1.3.1] - 2025-12-30
 
 ### Added
