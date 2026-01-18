@@ -195,3 +195,50 @@ $RECYCLE.BIN/
 *.lnk
 
 # End of https://www.gitignore.io/api/node,linux,macos,windows,visualstudiocode
+
+### Security ###
+# Private keys and certificates
+*.pem
+*.key
+*.p12
+*.pfx
+*.crt
+*.cer
+
+# Environment files (additional patterns)
+.env.local
+.env.*.local
+.env.development
+.env.production
+
+# Credentials and secrets
+*credentials*
+*secrets*
+*.secret
+*token*
+!*_token.go
+
+# Terraform sensitive files
+*.auto.tfvars
+terraform.tfvars
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# SSH keys
+id_rsa
+id_rsa.pub
+id_ed25519
+id_ed25519.pub
+known_hosts
+
+# Kubeconfig files (may contain credentials)
+kubeconfig
+kubeconfig.yaml
+kubeconfig.yml
+*.kubeconfig
+
+# Talos config (may contain credentials)
+talosconfig
+*.talosconfig
