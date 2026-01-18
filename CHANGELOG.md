@@ -7,6 +7,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.3.5] - 2026-01-18
+
+### Added
+- **Cluster Import Support**: `turingpi_k3s_cluster` resource now supports importing existing clusters
+  - Import format: `cluster_name:control_plane_host:ssh_user:ssh_key_path`
+  - Example: `terraform import turingpi_k3s_cluster.mycluster "mycluster:10.10.88.73:root:/home/user/.ssh/id_ed25519"`
+- **Progress Feedback**: Added tflog structured logging throughout cluster creation
+  - Logs cluster creation progress, worker installation status, addon deployment
+  - Helps diagnose issues during long-running operations
+- **K8s Client**: New `k8s_client.go` for applying Kubernetes manifests
+
+### Fixed
+- **MetalLB CRD Creation**: `deployMetalLB` now actually creates IPAddressPool and L2Advertisement CRDs
+  - Previously only installed Helm chart without configuring IP allocation
+  - Added `waitForMetalLBReady` to ensure CRDs are available before configuration
+  - Added `applyMetalLBConfig` to create required Custom Resources
+
+### Changed
+- Improved error messages with more context for debugging
+- Added context cancellation checks in long-running operations
+
 ## [1.3.4] - 2026-01-18
 
 ### Fixed
