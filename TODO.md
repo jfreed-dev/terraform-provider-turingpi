@@ -2,170 +2,41 @@
 
 This file tracks planned features and implementation tasks for the Terraform Turing Pi provider.
 
-## Milestone: v1.1.2 - Foundation
+## Current Release: v1.3.2
 
-### Cluster Helper Infrastructure
-- [x] Create `provider/cluster_helpers.go` with shared utilities
-- [x] Create `provider/ssh_client.go` with SSHClient interface (key-based auth)
-- [x] Add `WaitForSSH()` function with configurable timeout
-- [x] Add `WaitForKubeAPI()` function for cluster readiness checks
-- [x] Create `provider/kubeconfig.go` with parsing and validation
-- [x] Add unit tests with mock SSH client
+### Recently Completed
+- [x] Updated all Go modules to latest versions
+- [x] Updated CI action versions (checkout v6, codecov v5.5.2, trivy v0.33.1)
+- [x] Added PR template with Terraform provider checklist
+- [x] Enhanced .gitignore with security patterns
+- [x] Changed license from MIT to Apache 2.0
+- [x] Added Go version and downloads badges
 
-### Helm Integration
-- [x] Create `provider/helm_client.go` with HelmClient interface (mittwald/go-helm-client)
-- [x] Implement `DeployHelmChart()` and `DeployFromRepository()` functions
-- [x] Add Helm repo management (AddRepository, UpdateRepositories)
-- [x] Support custom values via ValuesYaml and Values map
-- [x] Add `WaitForHelmRelease()` with configurable timeout
-- [x] Add MockHelmClient for testing
+---
+
+## Milestone: v1.4.0 - Polish & Stability
 
 ### Testing Infrastructure
-- [x] Add mock SSH client for testing (MockSSHClient in cluster_helpers_test.go)
 - [ ] Add mock Kubernetes API for testing
 - [ ] Create cluster integration test framework
+- [ ] Add acceptance tests for all resources
+- [ ] Improve test coverage (target: 80%+)
 
----
-
-## Milestone: v1.1.3 - K3s Cluster Module (MVP Complete)
-
-### Resource: `turingpi_k3s_cluster`
-
-#### Schema Definition
-- [x] Define resource schema in `provider/resource_k3s_cluster.go`
-- [x] Add cluster identity fields (name)
-- [ ] Add image configuration (path, source type) - deferred to v1.1.5
-- [x] Add control plane node configuration
-- [x] Add worker nodes configuration (list)
-- [x] Add K3s version and network settings
-- [x] Add addon toggles (metallb, ingress)
-- [ ] Add NPU/RKNN configuration options - deferred to v1.1.5
-- [x] Add timeout configurations
-
-#### Node Provisioning (Assumes Pre-flashed Nodes)
-- [ ] Integrate with existing `turingpi_node` flash logic - deferred to v1.1.5
-- [ ] Implement parallel node flashing - deferred to v1.1.5
-- [ ] Add boot verification using UART monitoring - deferred to v1.1.5
-- [x] Implement SSH-based OS bootstrap (swap disable)
-
-#### Storage Setup - Deferred to v1.1.5
-- [ ] Detect NVMe devices on nodes
-- [ ] Partition and format NVMe for Longhorn
-- [ ] Create mount points and symlinks
-- [ ] Configure iSCSI for Longhorn
-
-#### K3s Installation
-- [x] Implement K3s server installation on control plane
-- [x] Extract node-token after server start
-- [x] Implement K3s agent installation on workers
-- [x] Configure agent with server URL and token
-- [x] Wait for all nodes to reach Ready state
-
-#### Addon Deployment
-- [x] Deploy MetalLB with IPAddressPool configuration
-- [x] Deploy NGINX Ingress with LoadBalancer service
-- [ ] Deploy Longhorn with NVMe storage class - deferred to v1.1.5
-- [ ] Deploy Prometheus stack (optional) - deferred to v1.1.5
-- [ ] Deploy Portainer agent (optional) - deferred to v1.1.5
-- [ ] Create Ingress resources for addon UIs - deferred to v1.1.5
-
-#### NPU Support (RK3588) - Deferred to v1.1.5
-- [ ] Detect vendor kernel (6.1.x) for NPU compatibility
-- [ ] Install RKNN-Toolkit2 runtime
-- [ ] Install RKNN-LLM library
-- [ ] Deploy rkllama service
-- [ ] Download and configure AI models (DeepSeek, etc.)
-- [ ] Verify NPU functionality (/sys/kernel/debug/rknpu/version)
-
-#### State Management
-- [x] Track cluster state (bootstrapping, ready, degraded)
-- [ ] Handle partial failures gracefully - basic implementation
-- [ ] Implement cluster update logic - deferred to v1.1.5
-- [x] Implement cluster destroy with cleanup
-
-#### Testing
-- [x] Unit tests for schema validation
-- [x] Mock tests for provisioning logic
-- [ ] Integration tests with real hardware (manual)
-
-#### Documentation
-- [x] Create `docs/resources/k3s_cluster.md`
-- [x] Create `examples/k3s-cluster/` with full example
+### Documentation
 - [ ] Add K3s deployment guide
+- [ ] Add troubleshooting guide
+- [ ] Add best practices guide
+- [ ] Create video tutorials
+- [ ] Add architecture diagrams
+
+### Bug Fixes & Improvements
+- [ ] Handle partial failures gracefully in cluster resources
+- [ ] Improve error messages for common issues
+- [ ] Add retry logic for transient BMC failures
 
 ---
 
-## Milestone: v1.1.4 - Talos Cluster Module ✅ COMPLETE
-
-### Resource: `turingpi_talos_cluster`
-
-#### Talos Image Factory Integration - Deferred (using talosctl instead)
-- [ ] Create `provider/talos_factory_client.go` - deferred to future release
-- [ ] Implement schematic submission to factory.talos.dev - deferred
-- [ ] Parse schematic response for image URL - deferred
-- [ ] Download and cache Talos images - deferred
-- [ ] Support custom extensions (iscsi-tools, util-linux-tools) - deferred
-- [ ] Support sbc-rockchip overlay - deferred
-
-#### Schema Definition
-- [x] Define resource schema in `provider/resource_talos_cluster.go`
-- [x] Add cluster identity and endpoint fields
-- [x] Add Talos version configuration (optional, for reference)
-- [x] Add control plane node configuration
-- [x] Add worker nodes configuration
-- [x] Add Kubernetes network settings (install_disk)
-- [x] Add addon toggles (metallb, ingress)
-
-#### Machine Config Generation (via talosctl)
-- [x] Shell out to `talosctl gen secrets`
-- [x] Shell out to `talosctl gen config`
-- [x] Implement patch generation for:
-  - [x] Hostnames
-  - [x] Scheduling on control plane
-  - [ ] Network interfaces - deferred
-  - [ ] NVMe disk partitioning - deferred
-  - [ ] Kubelet extra mounts - deferred
-- [x] Apply patches to base configs
-
-#### Cluster Bootstrap (assumes pre-flashed nodes)
-- [x] Apply machine configs using `talosctl apply-config --insecure`
-- [x] Configure talosctl endpoints and nodes
-- [x] Execute `talosctl bootstrap` (one-time, with safety check)
-- [x] Monitor cluster health with `talosctl health`
-- [x] Extract kubeconfig with `talosctl kubeconfig`
-
-#### Addon Deployment
-- [x] Wait for Kubernetes API availability
-- [x] Deploy MetalLB with IPAddressPool configuration
-- [x] Deploy NGINX Ingress with LoadBalancer service
-- [ ] Deploy Longhorn (with privileged namespace) - deferred to v1.1.5
-- [ ] Deploy Prometheus stack (optional) - deferred to v1.1.5
-
-#### State Management
-- [x] Detect if cluster already bootstrapped (prevent re-bootstrap via etcd check)
-- [x] Store secrets, talosconfig, kubeconfig in state
-- [ ] Track machine config versions - deferred
-- [ ] Implement config update/upgrade logic - deferred to v1.1.5
-- [x] Implement cluster destroy (reset nodes)
-
-#### NPU Limitation Handling
-- [x] Document NPU limitation in resource docs
-- [x] Suggest K3s module for NPU workloads in docs
-
-#### Testing
-- [x] Unit tests for schema validation
-- [x] Mock tests for talosctl interactions (exec.Command interface)
-- [ ] Integration tests with real hardware (manual)
-
-#### Documentation
-- [x] Create `docs/resources/talos_cluster.md`
-- [x] Create `examples/talos-cluster/` with full example
-- [x] Document NPU limitations clearly
-- [x] Document talosctl prerequisite
-
----
-
-## Milestone: v1.1.5 - Polish & Advanced Features
+## Milestone: v1.5.0 - Advanced Features
 
 ### Cluster Operations
 - [ ] Implement cluster upgrade support (K3s version bumps)
@@ -173,6 +44,22 @@ This file tracks planned features and implementation tasks for the Terraform Tur
 - [ ] Add node add/remove operations
 - [ ] Add cluster backup functionality
 - [ ] Add cluster restore functionality
+
+### Storage Setup
+- [ ] Detect NVMe devices on nodes
+- [ ] Partition and format NVMe for Longhorn
+- [ ] Create mount points and symlinks
+- [ ] Configure iSCSI for Longhorn
+- [ ] Deploy Longhorn with NVMe storage class
+
+### Additional Addons
+- [ ] Deploy Prometheus stack (optional)
+- [ ] Deploy Portainer agent (optional)
+- [ ] Create Ingress resources for addon UIs
+
+---
+
+## Milestone: v1.6.0 - Multi-Cluster & Observability
 
 ### Multi-Cluster Support
 - [ ] Support managing multiple clusters
@@ -183,12 +70,27 @@ This file tracks planned features and implementation tasks for the Terraform Tur
 - [ ] Add cluster health data source
 - [ ] Add node metrics data source
 - [ ] Add addon status data source
+- [ ] Grafana dashboard templates
 
-### Documentation
-- [ ] Comprehensive deployment guides
-- [ ] Troubleshooting guide
-- [ ] Best practices guide
-- [ ] Video tutorials
+---
+
+## Milestone: v2.0.0 - NPU Support
+
+### NPU Support (RK3588) - Pending Kernel Support
+- [ ] Detect vendor kernel (6.1.x) for NPU compatibility
+- [ ] Install RKNN-Toolkit2 runtime
+- [ ] Install RKNN-LLM library
+- [ ] Deploy rkllama service
+- [ ] Download and configure AI models (DeepSeek, etc.)
+- [ ] Verify NPU functionality (/sys/kernel/debug/rknpu/version)
+
+### Talos Image Factory Integration
+- [ ] Create `provider/talos_factory_client.go`
+- [ ] Implement schematic submission to factory.talos.dev
+- [ ] Parse schematic response for image URL
+- [ ] Download and cache Talos images
+- [ ] Support custom extensions (iscsi-tools, util-linux-tools)
+- [ ] Support sbc-rockchip overlay
 
 ---
 
@@ -199,14 +101,6 @@ This file tracks planned features and implementation tasks for the Terraform Tur
 - [ ] Evaluate embedded Ansible runner in Go
 - [ ] Evaluate pure SSH-based provisioning
 - [ ] Document pros/cons of each approach
-- [ ] Make final recommendation
-
-### Talos Integration Options ✅ COMPLETE
-- [x] Evaluate `siderolabs/terraform-provider-talos`
-- [x] Evaluate shelling out to talosctl
-- [x] Evaluate direct Talos API integration
-- [x] Document pros/cons of each approach
-- [x] Make final recommendation: **Shell out to talosctl** (implemented in v1.1.4)
 
 ### NPU Support Timeline
 - [ ] Monitor mainline kernel NPU driver progress
@@ -216,11 +110,43 @@ This file tracks planned features and implementation tasks for the Terraform Tur
 
 ---
 
-## Notes
+## Completed Milestones
 
-### Source Repositories
-- K3s automation: `~/Code/turing-ansible-cluster`
-- Talos configs: `~/Code/turing-rk1-clust`
+### v1.3.x - CI/CD & Maintenance ✅
+- [x] TFLint workflow for validating Terraform examples
+- [x] terraform-docs workflow for auto-generating documentation
+- [x] Trivy vulnerability and license scanning
+- [x] Codecov integration for test coverage
+- [x] Pre-commit hooks configuration
+- [x] golangci-lint v2 configuration
+- [x] PR template and .gitignore security enhancements
+- [x] Apache 2.0 license
+
+### v1.2.x - BMC API Compatibility ✅
+- [x] Support for legacy and new BMC firmware response formats
+- [x] Flash resource implementation with progress monitoring
+- [x] BMC firmware upgrade with file upload support
+
+### v1.1.x - Cluster Support ✅
+- [x] K3s cluster resource with SSH-based provisioning
+- [x] Talos cluster resource with talosctl integration
+- [x] MetalLB and NGINX Ingress addon deployment
+- [x] Helm integration via mittwald/go-helm-client
+- [x] SSH client with key-based auth
+- [x] Kubeconfig parsing and validation
+
+### v1.0.x - Foundation ✅
+- [x] Power management for nodes 1-4
+- [x] UART read/write access
+- [x] USB routing configuration
+- [x] USB boot mode for CM4
+- [x] Network reset resource
+- [x] SD card storage monitoring
+- [x] TLS flexibility for self-signed certs
+
+---
+
+## Notes
 
 ### Key Differences: K3s vs Talos
 
