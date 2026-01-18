@@ -205,6 +205,58 @@ func TestParseUSBStatus(t *testing.T) {
 			expectedNode:  1,
 			expectedRoute: "usb-a",
 		},
+		// BMC 2.0.x format tests (result array with object values)
+		{
+			name: "bmc_2_0_x_format_device_node2",
+			responseData: []map[string]interface{}{
+				{
+					"result": []interface{}{
+						map[string]interface{}{
+							"mode":  "Device",
+							"node":  "Node 2",
+							"route": "UsbA",
+						},
+					},
+				},
+			},
+			expectedMode:  "device",
+			expectedNode:  2,
+			expectedRoute: "usb-a",
+		},
+		{
+			name: "bmc_2_0_x_format_host_node1",
+			responseData: []map[string]interface{}{
+				{
+					"result": []interface{}{
+						map[string]interface{}{
+							"mode":  "Host",
+							"node":  "Node 1",
+							"route": "UsbA",
+						},
+					},
+				},
+			},
+			expectedMode:  "host",
+			expectedNode:  1,
+			expectedRoute: "usb-a",
+		},
+		{
+			name: "bmc_2_0_x_format_bmc_route",
+			responseData: []map[string]interface{}{
+				{
+					"result": []interface{}{
+						map[string]interface{}{
+							"mode":  "Device",
+							"node":  "Node 3",
+							"route": "BMC",
+						},
+					},
+				},
+			},
+			expectedMode:  "device",
+			expectedNode:  3,
+			expectedRoute: "bmc",
+		},
 	}
 
 	for _, tt := range tests {

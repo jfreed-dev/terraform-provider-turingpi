@@ -314,7 +314,7 @@ func parseUSBStatus(status *usbStatusResponse) (mode string, node int, route str
 		switch r {
 		case "BMC", "bmc", "Bmc":
 			route = "bmc"
-		case "USB-A", "usb-a", "USB-2.0", "Usb-a":
+		case "USB-A", "usb-a", "USB-2.0", "Usb-a", "UsbA":
 			route = "usb-a"
 		default:
 			route = r

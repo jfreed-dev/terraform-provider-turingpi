@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.3.6] - 2026-01-18
+
+### Fixed
+- **BMC 2.0.x - 2.1.0 Compatibility**: Fixed `turingpi_usb` data source to handle "UsbA" route value returned by BMC firmware 2.0.x through 2.1.0 (fixes #21)
+  - Added "UsbA" to recognized USB-A route values
+  - Added test coverage for BMC 2.0.x response format
+
 ## [1.3.5] - 2026-01-18
 
 ### Added
