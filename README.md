@@ -1,11 +1,13 @@
 # Terraform Provider for Turing Pi 2.5
 
 [![Terraform Registry](https://img.shields.io/badge/terraform-registry-blueviolet)](https://registry.terraform.io/providers/jfreed-dev/turingpi)
+[![Go Version](https://img.shields.io/github/go-mod/go-version/jfreed-dev/terraform-provider-turingpi)](https://go.dev/)
 [![Go](https://github.com/jfreed-dev/terraform-provider-turingpi/actions/workflows/go.yml/badge.svg)](https://github.com/jfreed-dev/terraform-provider-turingpi/actions/workflows/go.yml)
 [![Security](https://github.com/jfreed-dev/terraform-provider-turingpi/actions/workflows/security.yml/badge.svg)](https://github.com/jfreed-dev/terraform-provider-turingpi/actions/workflows/security.yml)
 [![codecov](https://codecov.io/gh/jfreed-dev/terraform-provider-turingpi/graph/badge.svg)](https://codecov.io/gh/jfreed-dev/terraform-provider-turingpi)
 [![Release](https://img.shields.io/github/v/release/jfreed-dev/terraform-provider-turingpi)](https://github.com/jfreed-dev/terraform-provider-turingpi/releases/latest)
-[![License](https://img.shields.io/github/license/jfreed-dev/terraform-provider-turingpi)](LICENSE)
+[![Downloads](https://img.shields.io/github/downloads/jfreed-dev/terraform-provider-turingpi/total)](https://github.com/jfreed-dev/terraform-provider-turingpi/releases)
+[![License](https://img.shields.io/badge/license-Apache%202.0-blue)](LICENSE)
 
 A Terraform provider for managing Turing Pi's Baseboard Management Controller (BMC), enabling power management, firmware flashing, and node provisioning.
 
