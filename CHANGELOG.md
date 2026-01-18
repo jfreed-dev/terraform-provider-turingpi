@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.3.4] - 2026-01-18
+
+### Fixed
+- **BMC Firmware 2.3.4 Compatibility**: Updated all data sources to support both legacy and new API response formats
+  - `turingpi_info`: Fixed JSON parsing for network interfaces, storage devices, and version info
+  - `turingpi_about`: Fixed JSON parsing for version information
+  - `turingpi_usb`: Fixed JSON parsing for USB routing status, including new "Node X" format
+  - All data sources now use `json.RawMessage` for flexible response handling
+
+### Changed
+- Updated unit tests to work with new response parsing approach
+
 ## [1.3.3] - 2026-01-18
 
 ### Changed

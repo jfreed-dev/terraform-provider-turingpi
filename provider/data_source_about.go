@@ -52,17 +52,8 @@ func dataSourceAboutRead(ctx context.Context, d *schema.ResourceData, meta inter
 		return diag.FromErr(fmt.Errorf("failed to fetch BMC about info: %w", err))
 	}
 
-	// Parse the response - format is [[key, value], [key, value], ...]
-	aboutMap := make(map[string]string)
-	for _, item := range aboutData.Response {
-		if len(item) >= 2 {
-			key, keyOk := item[0].(string)
-			value, valueOk := item[1].(string)
-			if keyOk && valueOk {
-				aboutMap[key] = value
-			}
-		}
-	}
+	// Parse the response using the shared function that handles both formats
+	aboutMap := parseAboutResponse(aboutData)
 
 	if v, ok := aboutMap["api"]; ok {
 		if err := d.Set("api_version", v); err != nil {
@@ -84,7 +75,12 @@ func dataSourceAboutRead(ctx context.Context, d *schema.ResourceData, meta inter
 			return diag.FromErr(fmt.Errorf("failed to set firmware_version: %w", err))
 		}
 	}
+	// Handle both "buildtime" (legacy) and "build_version" (new) field names
 	if v, ok := aboutMap["buildtime"]; ok {
+		if err := d.Set("build_time", v); err != nil {
+			return diag.FromErr(fmt.Errorf("failed to set build_time: %w", err))
+		}
+	} else if v, ok := aboutMap["build_version"]; ok {
 		if err := d.Set("build_time", v); err != nil {
 			return diag.FromErr(fmt.Errorf("failed to set build_time: %w", err))
 		}

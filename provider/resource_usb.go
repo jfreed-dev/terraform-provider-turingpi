@@ -33,8 +33,9 @@ const (
 )
 
 // usbStatusResponse represents the response from GET /api/bmc?opt=get&type=usb
+// Use json.RawMessage to support both legacy and new BMC firmware formats
 type usbStatusResponse struct {
-	Response [][]interface{} `json:"response"`
+	Response json.RawMessage `json:"response"`
 }
 
 func resourceUSB() *schema.Resource {
@@ -235,19 +236,42 @@ func getUSBStatus(endpoint, token string) (*usbStatusResponse, error) {
 }
 
 // parseUSBStatus extracts mode, node, and route from USB status response
+// Handles both legacy format and new BMC firmware format (2.3.4+)
 func parseUSBStatus(status *usbStatusResponse) (mode string, node int, route string) {
 	// Default values
 	mode = "host"
 	node = 1
 	route = "usb-a"
 
-	// Response format: [[key, value], [key, value], ...]
 	statusMap := make(map[string]interface{})
-	for _, item := range status.Response {
-		if len(item) >= 2 {
-			key, keyOk := item[0].(string)
-			if keyOk {
-				statusMap[key] = item[1]
+
+	// Try parsing as new format first: [{"result": [{key: value, ...}]}]
+	var newFormat []map[string]interface{}
+	if err := json.Unmarshal(status.Response, &newFormat); err == nil {
+		for _, item := range newFormat {
+			if result, ok := item["result"].([]interface{}); ok {
+				for _, r := range result {
+					if resultMap, ok := r.(map[string]interface{}); ok {
+						for k, v := range resultMap {
+							statusMap[k] = v
+						}
+					}
+				}
+			}
+		}
+	}
+
+	// If new format didn't work, try legacy format: [[key, value], [key, value], ...]
+	if len(statusMap) == 0 {
+		var legacyFormat [][]interface{}
+		if err := json.Unmarshal(status.Response, &legacyFormat); err == nil {
+			for _, item := range legacyFormat {
+				if len(item) >= 2 {
+					key, keyOk := item[0].(string)
+					if keyOk {
+						statusMap[key] = item[1]
+					}
+				}
 			}
 		}
 	}
@@ -259,24 +283,38 @@ func parseUSBStatus(status *usbStatusResponse) (mode string, node int, route str
 			mode = "host"
 		case "Device", "device":
 			mode = "device"
+		case "Flash", "flash":
+			mode = "host" // Flash mode is a variant of host mode
 		default:
 			mode = m
 		}
 	}
 
-	// Parse node (API returns 0-indexed, we use 1-indexed)
+	// Parse node - handle both numeric (0-indexed) and string format ("Node 1")
 	if n, ok := statusMap["node"].(float64); ok {
 		node = int(n) + 1
 	} else if n, ok := statusMap["node"].(int); ok {
 		node = n + 1
+	} else if n, ok := statusMap["node"].(string); ok {
+		// Handle "Node 1", "Node 2", etc.
+		switch n {
+		case "Node 1", "node1":
+			node = 1
+		case "Node 2", "node2":
+			node = 2
+		case "Node 3", "node3":
+			node = 3
+		case "Node 4", "node4":
+			node = 4
+		}
 	}
 
 	// Parse route
 	if r, ok := statusMap["route"].(string); ok {
 		switch r {
-		case "BMC", "bmc":
+		case "BMC", "bmc", "Bmc":
 			route = "bmc"
-		case "USB-A", "usb-a", "USB-2.0":
+		case "USB-A", "usb-a", "USB-2.0", "Usb-a":
 			route = "usb-a"
 		default:
 			route = r

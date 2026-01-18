@@ -424,15 +424,13 @@ func extractFlashStatus(resp *flashProgressResponse) string {
 
 // extractFirmwareVersion extracts the firmware version from the about response
 func extractFirmwareVersion(data *bmcAboutResponse) string {
-	for _, item := range data.Response {
-		if len(item) >= 2 {
-			key, keyOk := item[0].(string)
-			if keyOk && key == "firmware" {
-				if value, valueOk := item[1].(string); valueOk {
-					return value
-				}
-			}
-		}
+	aboutMap := parseAboutResponse(data)
+	if v, ok := aboutMap["firmware"]; ok {
+		return v
+	}
+	// Also check for "version" which is the daemon version in new format
+	if v, ok := aboutMap["version"]; ok {
+		return v
 	}
 	return ""
 }

@@ -2,6 +2,7 @@ package provider
 
 import (
 	"context"
+	"encoding/json"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -176,43 +177,41 @@ func TestExtractFlashStatus(t *testing.T) {
 
 func TestExtractFirmwareVersion(t *testing.T) {
 	tests := []struct {
-		name     string
-		response *bmcAboutResponse
-		want     string
+		name         string
+		responseData interface{}
+		want         string
 	}{
 		{
 			name: "valid firmware version",
-			response: &bmcAboutResponse{
-				Response: [][]interface{}{
-					{"api", "1.0"},
-					{"firmware", "2.0.5"},
-					{"buildroot", "2023.02"},
-				},
+			responseData: [][]interface{}{
+				{"api", "1.0"},
+				{"firmware", "2.0.5"},
+				{"buildroot", "2023.02"},
 			},
 			want: "2.0.5",
 		},
 		{
 			name: "no firmware field",
-			response: &bmcAboutResponse{
-				Response: [][]interface{}{
-					{"api", "1.0"},
-					{"buildroot", "2023.02"},
-				},
+			responseData: [][]interface{}{
+				{"api", "1.0"},
+				{"buildroot", "2023.02"},
 			},
 			want: "",
 		},
 		{
-			name: "empty response",
-			response: &bmcAboutResponse{
-				Response: [][]interface{}{},
-			},
-			want: "",
+			name:         "empty response",
+			responseData: [][]interface{}{},
+			want:         "",
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := extractFirmwareVersion(tt.response)
+			jsonData, _ := json.Marshal(tt.responseData)
+			response := &bmcAboutResponse{
+				Response: json.RawMessage(jsonData),
+			}
+			got := extractFirmwareVersion(response)
 			if got != tt.want {
 				t.Errorf("extractFirmwareVersion() = %v, want %v", got, tt.want)
 			}

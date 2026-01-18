@@ -343,8 +343,10 @@ func TestFetchBMCAbout_Success(t *testing.T) {
 		t.Fatalf("unexpected error: %v", err)
 	}
 
-	if len(result.Response) != 2 {
-		t.Errorf("expected 2 response items, got %d", len(result.Response))
+	// Verify we got valid JSON data
+	aboutMap := parseAboutResponse(result)
+	if len(aboutMap) != 2 {
+		t.Errorf("expected 2 response items, got %d", len(aboutMap))
 	}
 }
 
@@ -369,11 +371,13 @@ func TestFetchBMCInfo_Success(t *testing.T) {
 		t.Fatalf("unexpected error: %v", err)
 	}
 
-	if len(result.Response.Network) != 1 {
-		t.Errorf("expected 1 network interface, got %d", len(result.Response.Network))
+	// Verify we got valid JSON data by parsing it
+	network, storage := parseInfoResponse(result)
+	if len(network) != 1 {
+		t.Errorf("expected 1 network interface, got %d", len(network))
 	}
-	if len(result.Response.Storage) != 1 {
-		t.Errorf("expected 1 storage device, got %d", len(result.Response.Storage))
+	if len(storage) != 1 {
+		t.Errorf("expected 1 storage device, got %d", len(storage))
 	}
 }
 
@@ -394,8 +398,18 @@ func TestFetchBMCPower_Success(t *testing.T) {
 		t.Fatalf("unexpected error: %v", err)
 	}
 
-	if len(result.Response) != 2 {
-		t.Errorf("expected 2 response items, got %d", len(result.Response))
+	// Verify we got valid JSON data by parsing it
+	// Note: parsePowerResponseForInfo always returns 4 nodes with default false values
+	powerMap := parsePowerResponseForInfo(result)
+	if len(powerMap) != 4 {
+		t.Errorf("expected 4 response items (all nodes), got %d", len(powerMap))
+	}
+	// Verify the values we set
+	if powerMap["node1"] != true {
+		t.Errorf("expected node1 to be true")
+	}
+	if powerMap["node2"] != false {
+		t.Errorf("expected node2 to be false")
 	}
 }
 
@@ -403,14 +417,17 @@ func TestSetAboutData(t *testing.T) {
 	d := dataSourceInfo()
 	rd := d.TestResourceData()
 
+	// Create JSON data for the response
+	responseData := [][]interface{}{
+		{"api", "1.0"},
+		{"version", "2.0.5"},
+		{"buildroot", "2023.02"},
+		{"firmware", "1.1.0"},
+		{"buildtime", "2024-01-15T10:30:00Z"},
+	}
+	jsonData, _ := json.Marshal(responseData)
 	aboutData := &bmcAboutResponse{
-		Response: [][]interface{}{
-			{"api", "1.0"},
-			{"version", "2.0.5"},
-			{"buildroot", "2023.02"},
-			{"firmware", "1.1.0"},
-			{"buildtime", "2024-01-15T10:30:00Z"},
-		},
+		Response: json.RawMessage(jsonData),
 	}
 
 	err := setAboutData(rd, aboutData)
@@ -439,11 +456,14 @@ func TestSetPowerData_BoolValues(t *testing.T) {
 	d := dataSourceInfo()
 	rd := d.TestResourceData()
 
+	// Create JSON data for the response
+	responseData := [][]interface{}{
+		{"node1", true},
+		{"node2", false},
+	}
+	jsonData, _ := json.Marshal(responseData)
 	powerData := &bmcPowerResponse{
-		Response: [][]interface{}{
-			{"node1", true},
-			{"node2", false},
-		},
+		Response: json.RawMessage(jsonData),
 	}
 
 	err := setPowerData(rd, powerData)
@@ -464,11 +484,14 @@ func TestSetPowerData_NumericValues(t *testing.T) {
 	d := dataSourceInfo()
 	rd := d.TestResourceData()
 
+	// Create JSON data for the response
+	responseData := [][]interface{}{
+		{"node1", float64(1)},
+		{"node2", float64(0)},
+	}
+	jsonData, _ := json.Marshal(responseData)
 	powerData := &bmcPowerResponse{
-		Response: [][]interface{}{
-			{"node1", float64(1)},
-			{"node2", float64(0)},
-		},
+		Response: json.RawMessage(jsonData),
 	}
 
 	err := setPowerData(rd, powerData)

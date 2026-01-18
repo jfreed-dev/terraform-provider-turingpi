@@ -149,19 +149,17 @@ func TestGetUSBAPIMode(t *testing.T) {
 func TestParseUSBStatus(t *testing.T) {
 	tests := []struct {
 		name          string
-		response      *usbStatusResponse
+		responseData  interface{}
 		expectedMode  string
 		expectedNode  int
 		expectedRoute string
 	}{
 		{
 			name: "host_usb-a_node1",
-			response: &usbStatusResponse{
-				Response: [][]interface{}{
-					{"mode", "Host"},
-					{"node", float64(0)},
-					{"route", "USB-A"},
-				},
+			responseData: [][]interface{}{
+				{"mode", "Host"},
+				{"node", float64(0)},
+				{"route", "USB-A"},
 			},
 			expectedMode:  "host",
 			expectedNode:  1,
@@ -169,12 +167,10 @@ func TestParseUSBStatus(t *testing.T) {
 		},
 		{
 			name: "device_bmc_node2",
-			response: &usbStatusResponse{
-				Response: [][]interface{}{
-					{"mode", "Device"},
-					{"node", float64(1)},
-					{"route", "BMC"},
-				},
+			responseData: [][]interface{}{
+				{"mode", "Device"},
+				{"node", float64(1)},
+				{"route", "BMC"},
 			},
 			expectedMode:  "device",
 			expectedNode:  2,
@@ -182,12 +178,10 @@ func TestParseUSBStatus(t *testing.T) {
 		},
 		{
 			name: "lowercase_values",
-			response: &usbStatusResponse{
-				Response: [][]interface{}{
-					{"mode", "host"},
-					{"node", float64(2)},
-					{"route", "bmc"},
-				},
+			responseData: [][]interface{}{
+				{"mode", "host"},
+				{"node", float64(2)},
+				{"route", "bmc"},
 			},
 			expectedMode:  "host",
 			expectedNode:  3,
@@ -195,22 +189,18 @@ func TestParseUSBStatus(t *testing.T) {
 		},
 		{
 			name: "usb20_route",
-			response: &usbStatusResponse{
-				Response: [][]interface{}{
-					{"mode", "Host"},
-					{"node", float64(3)},
-					{"route", "USB-2.0"},
-				},
+			responseData: [][]interface{}{
+				{"mode", "Host"},
+				{"node", float64(3)},
+				{"route", "USB-2.0"},
 			},
 			expectedMode:  "host",
 			expectedNode:  4,
 			expectedRoute: "usb-a",
 		},
 		{
-			name: "empty_response",
-			response: &usbStatusResponse{
-				Response: [][]interface{}{},
-			},
+			name:          "empty_response",
+			responseData:  [][]interface{}{},
 			expectedMode:  "host",
 			expectedNode:  1,
 			expectedRoute: "usb-a",
@@ -219,7 +209,11 @@ func TestParseUSBStatus(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			mode, node, route := parseUSBStatus(tt.response)
+			jsonData, _ := json.Marshal(tt.responseData)
+			response := &usbStatusResponse{
+				Response: json.RawMessage(jsonData),
+			}
+			mode, node, route := parseUSBStatus(response)
 
 			if mode != tt.expectedMode {
 				t.Errorf("expected mode %s, got %s", tt.expectedMode, mode)
@@ -343,8 +337,16 @@ func TestGetUSBStatus_Success(t *testing.T) {
 		t.Fatalf("unexpected error: %v", err)
 	}
 
-	if len(result.Response) != 3 {
-		t.Errorf("expected 3 response items, got %d", len(result.Response))
+	// Verify we can parse the response
+	mode, node, route := parseUSBStatus(result)
+	if mode != "host" {
+		t.Errorf("expected mode 'host', got '%s'", mode)
+	}
+	if node != 1 {
+		t.Errorf("expected node 1, got %d", node)
+	}
+	if route != "usb-a" {
+		t.Errorf("expected route 'usb-a', got '%s'", route)
 	}
 }
 

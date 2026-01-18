@@ -12,15 +12,13 @@ import (
 )
 
 // BMC API response structures
+// Use json.RawMessage to support both legacy and new BMC firmware formats
 type bmcAboutResponse struct {
-	Response [][]interface{} `json:"response"`
+	Response json.RawMessage `json:"response"`
 }
 
 type bmcInfoResponse struct {
-	Response struct {
-		Network []networkInterface `json:"network"`
-		Storage []storageDevice    `json:"storage"`
-	} `json:"response"`
+	Response json.RawMessage `json:"response"`
 }
 
 type networkInterface struct {
@@ -30,14 +28,16 @@ type networkInterface struct {
 }
 
 type storageDevice struct {
-	Name  string `json:"name"`
-	Total int64  `json:"total"`
-	Free  int64  `json:"free"`
-	Used  int64  `json:"use"`
+	Name       string `json:"name"`
+	Total      int64  `json:"total"`
+	TotalBytes int64  `json:"total_bytes"`
+	Free       int64  `json:"free"`
+	BytesFree  int64  `json:"bytes_free"`
+	Used       int64  `json:"use"`
 }
 
 type bmcPowerResponse struct {
-	Response [][]interface{} `json:"response"`
+	Response json.RawMessage `json:"response"`
 }
 
 func dataSourceInfo() *schema.Resource {
@@ -267,18 +267,7 @@ func fetchBMCPower(endpoint, token string) (*bmcPowerResponse, error) {
 }
 
 func setAboutData(d *schema.ResourceData, data *bmcAboutResponse) error {
-	// The about API returns data in a nested array format:
-	// [[key, value], [key, value], ...]
-	aboutMap := make(map[string]string)
-	for _, item := range data.Response {
-		if len(item) >= 2 {
-			key, keyOk := item[0].(string)
-			value, valueOk := item[1].(string)
-			if keyOk && valueOk {
-				aboutMap[key] = value
-			}
-		}
-	}
+	aboutMap := parseAboutResponse(data)
 
 	if v, ok := aboutMap["api"]; ok {
 		if err := d.Set("api_version", v); err != nil {
@@ -300,7 +289,12 @@ func setAboutData(d *schema.ResourceData, data *bmcAboutResponse) error {
 			return fmt.Errorf("failed to set firmware_version: %w", err)
 		}
 	}
+	// Handle both "buildtime" (legacy) and "build_version" (new) field names
 	if v, ok := aboutMap["buildtime"]; ok {
+		if err := d.Set("build_time", v); err != nil {
+			return fmt.Errorf("failed to set build_time: %w", err)
+		}
+	} else if v, ok := aboutMap["build_version"]; ok {
 		if err := d.Set("build_time", v); err != nil {
 			return fmt.Errorf("failed to set build_time: %w", err)
 		}
@@ -309,10 +303,51 @@ func setAboutData(d *schema.ResourceData, data *bmcAboutResponse) error {
 	return nil
 }
 
+// parseAboutResponse extracts about data from API response
+// Handles both legacy format and new BMC firmware format (2.3.4+)
+func parseAboutResponse(data *bmcAboutResponse) map[string]string {
+	aboutMap := make(map[string]string)
+
+	// Try parsing as new format first: [{"result": {key: value, ...}}]
+	var newFormat []map[string]interface{}
+	if err := json.Unmarshal(data.Response, &newFormat); err == nil {
+		for _, item := range newFormat {
+			if result, ok := item["result"].(map[string]interface{}); ok {
+				for key, value := range result {
+					if strVal, ok := value.(string); ok {
+						aboutMap[key] = strVal
+					}
+				}
+			}
+		}
+		if len(aboutMap) > 0 {
+			return aboutMap
+		}
+	}
+
+	// Fall back to legacy format: [[key, value], [key, value], ...]
+	var legacyFormat [][]interface{}
+	if err := json.Unmarshal(data.Response, &legacyFormat); err == nil {
+		for _, item := range legacyFormat {
+			if len(item) >= 2 {
+				key, keyOk := item[0].(string)
+				value, valueOk := item[1].(string)
+				if keyOk && valueOk {
+					aboutMap[key] = value
+				}
+			}
+		}
+	}
+
+	return aboutMap
+}
+
 func setInfoData(d *schema.ResourceData, data *bmcInfoResponse) error {
+	networks, storages := parseInfoResponse(data)
+
 	// Set network interfaces
-	networkInterfaces := make([]map[string]interface{}, 0, len(data.Response.Network))
-	for _, iface := range data.Response.Network {
+	networkInterfaces := make([]map[string]interface{}, 0, len(networks))
+	for _, iface := range networks {
 		networkInterfaces = append(networkInterfaces, map[string]interface{}{
 			"device": iface.Device,
 			"ip":     iface.IP,
@@ -324,13 +359,22 @@ func setInfoData(d *schema.ResourceData, data *bmcInfoResponse) error {
 	}
 
 	// Set storage devices
-	storageDevices := make([]map[string]interface{}, 0, len(data.Response.Storage))
-	for _, storage := range data.Response.Storage {
+	storageDevices := make([]map[string]interface{}, 0, len(storages))
+	for _, storage := range storages {
+		// Handle both legacy (Total/Free) and new (TotalBytes/BytesFree) field names
+		totalBytes := storage.Total
+		if totalBytes == 0 {
+			totalBytes = storage.TotalBytes
+		}
+		freeBytes := storage.Free
+		if freeBytes == 0 {
+			freeBytes = storage.BytesFree
+		}
 		storageDevices = append(storageDevices, map[string]interface{}{
 			"name":        storage.Name,
-			"total_bytes": storage.Total,
+			"total_bytes": totalBytes,
 			"used_bytes":  storage.Used,
-			"free_bytes":  storage.Free,
+			"free_bytes":  freeBytes,
 		})
 	}
 	if err := d.Set("storage_devices", storageDevices); err != nil {
@@ -340,30 +384,151 @@ func setInfoData(d *schema.ResourceData, data *bmcInfoResponse) error {
 	return nil
 }
 
-func setPowerData(d *schema.ResourceData, data *bmcPowerResponse) error {
-	// The power API returns data in format:
-	// [[node1, status], [node2, status], ...]
-	nodes := make(map[string]interface{})
-	for _, item := range data.Response {
-		if len(item) >= 2 {
-			nodeName, nameOk := item[0].(string)
-			// Status could be bool or int (0/1)
-			if nameOk {
-				switch v := item[1].(type) {
-				case bool:
-					nodes[nodeName] = v
-				case float64:
-					nodes[nodeName] = v == 1
-				case int:
-					nodes[nodeName] = v == 1
+// parseInfoResponse extracts network and storage data from API response
+// Handles both legacy format and new BMC firmware format (2.3.4+)
+func parseInfoResponse(data *bmcInfoResponse) ([]networkInterface, []storageDevice) {
+	var networks []networkInterface
+	var storages []storageDevice
+
+	// Try parsing as new format first: [{"result": {"ip": [...], "storage": [...]}}]
+	var newFormat []map[string]interface{}
+	if err := json.Unmarshal(data.Response, &newFormat); err == nil {
+		for _, item := range newFormat {
+			if result, ok := item["result"].(map[string]interface{}); ok {
+				// Parse IP/network interfaces
+				if ipList, ok := result["ip"].([]interface{}); ok {
+					for _, ip := range ipList {
+						if ipMap, ok := ip.(map[string]interface{}); ok {
+							iface := networkInterface{
+								Device: getStringValue(ipMap, "device"),
+								IP:     getStringValue(ipMap, "ip"),
+								MAC:    getStringValue(ipMap, "mac"),
+							}
+							networks = append(networks, iface)
+						}
+					}
+				}
+				// Parse storage devices
+				if storageList, ok := result["storage"].([]interface{}); ok {
+					for _, s := range storageList {
+						if storageMap, ok := s.(map[string]interface{}); ok {
+							storage := storageDevice{
+								Name:       getStringValue(storageMap, "name"),
+								TotalBytes: getInt64Value(storageMap, "total_bytes"),
+								BytesFree:  getInt64Value(storageMap, "bytes_free"),
+							}
+							storages = append(storages, storage)
+						}
+					}
 				}
 			}
 		}
+		if len(networks) > 0 || len(storages) > 0 {
+			return networks, storages
+		}
 	}
+
+	// Fall back to legacy format: {"network": [...], "storage": [...]}
+	var legacyFormat struct {
+		Network []networkInterface `json:"network"`
+		Storage []storageDevice    `json:"storage"`
+	}
+	if err := json.Unmarshal(data.Response, &legacyFormat); err == nil {
+		networks = legacyFormat.Network
+		storages = legacyFormat.Storage
+	}
+
+	return networks, storages
+}
+
+// getStringValue safely extracts a string value from a map
+func getStringValue(m map[string]interface{}, key string) string {
+	if v, ok := m[key].(string); ok {
+		return v
+	}
+	return ""
+}
+
+// getInt64Value safely extracts an int64 value from a map
+func getInt64Value(m map[string]interface{}, key string) int64 {
+	if v, ok := m[key].(float64); ok {
+		return int64(v)
+	}
+	if v, ok := m[key].(int64); ok {
+		return v
+	}
+	if v, ok := m[key].(int); ok {
+		return int64(v)
+	}
+	return 0
+}
+
+func setPowerData(d *schema.ResourceData, data *bmcPowerResponse) error {
+	nodes := parsePowerResponseForInfo(data)
 
 	if err := d.Set("nodes", nodes); err != nil {
 		return fmt.Errorf("failed to set nodes: %w", err)
 	}
 
 	return nil
+}
+
+// parsePowerResponseForInfo extracts node power status from API response
+// Handles both legacy format and new BMC firmware format (2.3.4+)
+func parsePowerResponseForInfo(data *bmcPowerResponse) map[string]interface{} {
+	nodes := make(map[string]interface{})
+
+	// Initialize all nodes to false
+	nodes["node1"] = false
+	nodes["node2"] = false
+	nodes["node3"] = false
+	nodes["node4"] = false
+
+	// Try parsing as new format first: [{"result": [{"node1": "1", ...}]}]
+	var newFormat []map[string]interface{}
+	if err := json.Unmarshal(data.Response, &newFormat); err == nil {
+		for _, item := range newFormat {
+			// Check for "result" array in the response
+			if result, ok := item["result"].([]interface{}); ok {
+				for _, r := range result {
+					if nodeMap, ok := r.(map[string]interface{}); ok {
+						for nodeName, value := range nodeMap {
+							nodes[nodeName] = parsePowerValueForInfo(value)
+						}
+					}
+				}
+			}
+		}
+		return nodes
+	}
+
+	// Fall back to legacy format: [[nodeName, status], [nodeName, status], ...]
+	var legacyFormat [][]interface{}
+	if err := json.Unmarshal(data.Response, &legacyFormat); err == nil {
+		for _, item := range legacyFormat {
+			if len(item) >= 2 {
+				nodeName, nameOk := item[0].(string)
+				if nameOk {
+					nodes[nodeName] = parsePowerValueForInfo(item[1])
+				}
+			}
+		}
+	}
+
+	return nodes
+}
+
+// parsePowerValueForInfo converts various types to boolean power state
+func parsePowerValueForInfo(v interface{}) bool {
+	switch val := v.(type) {
+	case bool:
+		return val
+	case float64:
+		return val == 1
+	case int:
+		return val == 1
+	case string:
+		return val == "1" || val == "true" || val == "on"
+	}
+	return false
 }
