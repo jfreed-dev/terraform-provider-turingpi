@@ -7,9 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.3.3] - 2026-01-18
+
 ### Changed
-- **License** - Changed from MIT to Apache 2.0 for better enterprise adoption and patent protection
-- **Documentation** - Added Go version and downloads badges to README
+- Synchronized release with terraform-turingpi-modules v1.3.3
 
 ## [1.3.2] - 2025-01-18
 
@@ -347,7 +348,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Release automation workflow with GoReleaser
 - Multi-platform binaries (linux/darwin/windows, amd64/arm64)
 
-[Unreleased]: https://github.com/jfreed-dev/terraform-provider-turingpi/compare/v1.3.2...HEAD
+[Unreleased]: https://github.com/jfreed-dev/terraform-provider-turingpi/compare/v1.3.3...HEAD
+[1.3.3]: https://github.com/jfreed-dev/terraform-provider-turingpi/compare/v1.3.2...v1.3.3
 [1.3.2]: https://github.com/jfreed-dev/terraform-provider-turingpi/compare/v1.3.1...v1.3.2
 [1.3.1]: https://github.com/jfreed-dev/terraform-provider-turingpi/compare/v1.3.0...v1.3.1
 [1.3.0]: https://github.com/jfreed-dev/terraform-provider-turingpi/compare/v1.2.2...v1.3.0
