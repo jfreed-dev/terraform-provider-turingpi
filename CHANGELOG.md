@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.3.9] - 2026-01-19
+
+### Changed
+- Synchronized release with terraform-turingpi-modules v1.3.9
+- Documentation updates
+
+### Verified
+- All data sources tested on physical cluster (BMC firmware v2.3.4)
+  - turingpi_info: Firmware version, network interfaces, storage
+  - turingpi_about: API v1.1, daemon v2.3.4, Buildroot 2024.05.1
+  - turingpi_power: All 4 nodes power status verified
+  - turingpi_usb: Mode, node, route attributes
+  - turingpi_sdcard: Storage capacity readings
+  - turingpi_uart: UART configuration
+
 ## [1.3.8] - 2026-01-19
 
 ### Changed

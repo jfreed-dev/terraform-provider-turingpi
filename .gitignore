@@ -242,3 +242,4 @@ kubeconfig.yml
 # Talos config (may contain credentials)
 talosconfig
 *.talosconfig
+dist/
