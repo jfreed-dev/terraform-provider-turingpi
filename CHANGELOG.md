@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.3.8] - 2026-01-19
+
+### Changed
+- Synchronized release with terraform-turingpi-modules v1.3.8
+- Documentation updates and cross-references to modules helper scripts
+
+## [1.3.7] - 2026-01-19
+
+### Changed
+- Synchronized release with terraform-turingpi-modules v1.3.7
+
 ## [1.3.6] - 2026-01-18
 
 ### Fixed
@@ -388,7 +399,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Release automation workflow with GoReleaser
 - Multi-platform binaries (linux/darwin/windows, amd64/arm64)
 
-[Unreleased]: https://github.com/jfreed-dev/terraform-provider-turingpi/compare/v1.3.6...HEAD
+[Unreleased]: https://github.com/jfreed-dev/terraform-provider-turingpi/compare/v1.3.8...HEAD
+[1.3.8]: https://github.com/jfreed-dev/terraform-provider-turingpi/compare/v1.3.7...v1.3.8
+[1.3.7]: https://github.com/jfreed-dev/terraform-provider-turingpi/compare/v1.3.6...v1.3.7
 [1.3.6]: https://github.com/jfreed-dev/terraform-provider-turingpi/compare/v1.3.5...v1.3.6
 [1.3.5]: https://github.com/jfreed-dev/terraform-provider-turingpi/compare/v1.3.4...v1.3.5
 [1.3.4]: https://github.com/jfreed-dev/terraform-provider-turingpi/compare/v1.3.3...v1.3.4
