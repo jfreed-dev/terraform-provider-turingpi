@@ -42,6 +42,17 @@ For cluster deployment, we recommend using the composable [terraform-turingpi-mo
 | `monitoring` | Prometheus, Grafana, Alertmanager stack |
 | `portainer` | Cluster management agent (CE/BE) |
 
+### Helper Scripts
+
+The modules repository includes helper scripts for cluster lifecycle management:
+
+| Script | Description |
+|--------|-------------|
+| [`cluster-preflight.sh`](https://github.com/jfreed-dev/terraform-turingpi-modules/blob/main/scripts/cluster-preflight.sh) | Pre-deployment validation (tools, BMC, node connectivity) |
+| [`talos-wipe.sh`](https://github.com/jfreed-dev/terraform-turingpi-modules/blob/main/scripts/talos-wipe.sh) | Wipe Talos cluster (NVMe + eMMC) and shutdown nodes |
+| [`k3s-wipe.sh`](https://github.com/jfreed-dev/terraform-turingpi-modules/blob/main/scripts/k3s-wipe.sh) | Wipe K3s cluster (NVMe + eMMC) and shutdown nodes |
+| [`find-armbian-image.sh`](https://github.com/jfreed-dev/terraform-turingpi-modules/blob/main/scripts/find-armbian-image.sh) | Find Armbian images and generate autoconfig files |
+
 > **Note:** The `turingpi_k3s_cluster` and `turingpi_talos_cluster` resources are deprecated and will be removed in v2.0.0. See the [Migration Guide](docs/MIGRATION.md) for upgrade instructions.
 
 ## Documentation
