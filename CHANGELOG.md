@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.3.10] - 2026-01-25
+
+### Fixed
+- **BMC Firmware 2.0.5+ Compatibility**: Fixed flash status parsing for new `Transferring` response format (fixes #23)
+  - BMC now returns an object with `id`, `process_name`, `size`, `cancelled`, `bytes_written` instead of array
+  - Provider now handles both legacy array format and new object format
+  - Added progress percentage display during transfer phase
+
 ## [1.3.9] - 2026-01-19
 
 ### Changed
@@ -414,7 +422,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Release automation workflow with GoReleaser
 - Multi-platform binaries (linux/darwin/windows, amd64/arm64)
 
-[Unreleased]: https://github.com/jfreed-dev/terraform-provider-turingpi/compare/v1.3.8...HEAD
+[Unreleased]: https://github.com/jfreed-dev/terraform-provider-turingpi/compare/v1.3.10...HEAD
+[1.3.10]: https://github.com/jfreed-dev/terraform-provider-turingpi/compare/v1.3.9...v1.3.10
+[1.3.9]: https://github.com/jfreed-dev/terraform-provider-turingpi/compare/v1.3.8...v1.3.9
 [1.3.8]: https://github.com/jfreed-dev/terraform-provider-turingpi/compare/v1.3.7...v1.3.8
 [1.3.7]: https://github.com/jfreed-dev/terraform-provider-turingpi/compare/v1.3.6...v1.3.7
 [1.3.6]: https://github.com/jfreed-dev/terraform-provider-turingpi/compare/v1.3.5...v1.3.6
