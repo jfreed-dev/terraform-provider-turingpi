@@ -48,7 +48,7 @@ type flashResponse struct {
 
 // flashStatusResponse represents the BMC flash status response
 type flashStatusResponse struct {
-	Transferring *[]int64        `json:"Transferring,omitempty"`
+	Transferring json.RawMessage `json:"Transferring,omitempty"`
 	Flashing     *flashingStatus `json:"Flashing,omitempty"`
 	Done         *[]interface{}  `json:"Done,omitempty"`
 	Error        *string         `json:"Error,omitempty"`
@@ -57,6 +57,38 @@ type flashStatusResponse struct {
 type flashingStatus struct {
 	BytesWritten int64 `json:"bytes_written"`
 	TotalBytes   int64 `json:"total_bytes"`
+}
+
+// transferringStatus represents the new BMC firmware 2.0.5+ format
+type transferringStatus struct {
+	ID           int64  `json:"id"`
+	ProcessName  string `json:"process_name"`
+	Size         int64  `json:"size"`
+	Cancelled    bool   `json:"cancelled"`
+	BytesWritten int64  `json:"bytes_written"`
+}
+
+// isTransferring checks if the flash status indicates a transfer is in progress
+// and returns progress info if available. Handles both old ([]int64) and new (object) formats.
+func (f *flashStatusResponse) isTransferring() (inProgress bool, bytesWritten, totalBytes int64) {
+	if f.Transferring == nil || len(f.Transferring) == 0 {
+		return false, 0, 0
+	}
+
+	// Try new object format first (BMC firmware 2.0.5+)
+	var newFormat transferringStatus
+	if err := json.Unmarshal(f.Transferring, &newFormat); err == nil {
+		return true, newFormat.BytesWritten, newFormat.Size
+	}
+
+	// Try old array format (legacy BMC firmware)
+	var oldFormat []int64
+	if err := json.Unmarshal(f.Transferring, &oldFormat); err == nil && len(oldFormat) >= 2 {
+		return true, oldFormat[0], oldFormat[1]
+	}
+
+	// Unknown format but field is present - assume transferring
+	return true, 0, 0
 }
 
 func resourceFlashCreate(d *schema.ResourceData, meta interface{}) error {
@@ -222,8 +254,13 @@ func resourceFlashCreate(d *schema.ResourceData, meta interface{}) error {
 				fmt.Printf("Flashing: %.1f%% (%d/%d bytes)\n", pct, status.Flashing.BytesWritten, status.Flashing.TotalBytes)
 			}
 
-			if status.Transferring != nil {
-				fmt.Printf("Transferring...\n")
+			if inProgress, bytesWritten, totalBytes := status.isTransferring(); inProgress {
+				if totalBytes > 0 {
+					pct := float64(bytesWritten) / float64(totalBytes) * 100
+					fmt.Printf("Transferring: %.1f%% (%d/%d bytes)\n", pct, bytesWritten, totalBytes)
+				} else {
+					fmt.Printf("Transferring...\n")
+				}
 			}
 		}
 	}

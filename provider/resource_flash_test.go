@@ -191,3 +191,119 @@ func TestResourceFlashDelete_DoesNotError(t *testing.T) {
 		t.Fatalf("unexpected error: %s", err)
 	}
 }
+
+func TestFlashStatusResponse_isTransferring_NewFormat(t *testing.T) {
+	// BMC firmware 2.0.5+ returns an object format
+	status := &flashStatusResponse{
+		Transferring: []byte(`{"id":395533509,"process_name":"Node 1 upgrade service","size":1103253504,"cancelled":false,"bytes_written":550000000}`),
+	}
+
+	inProgress, bytesWritten, totalBytes := status.isTransferring()
+	if !inProgress {
+		t.Error("expected transfer to be in progress")
+	}
+	if bytesWritten != 550000000 {
+		t.Errorf("expected bytesWritten=550000000, got %d", bytesWritten)
+	}
+	if totalBytes != 1103253504 {
+		t.Errorf("expected totalBytes=1103253504, got %d", totalBytes)
+	}
+}
+
+func TestFlashStatusResponse_isTransferring_OldFormat(t *testing.T) {
+	// Legacy BMC firmware returns an array format [bytes_written, total_bytes]
+	status := &flashStatusResponse{
+		Transferring: []byte(`[550000000, 1103253504]`),
+	}
+
+	inProgress, bytesWritten, totalBytes := status.isTransferring()
+	if !inProgress {
+		t.Error("expected transfer to be in progress")
+	}
+	if bytesWritten != 550000000 {
+		t.Errorf("expected bytesWritten=550000000, got %d", bytesWritten)
+	}
+	if totalBytes != 1103253504 {
+		t.Errorf("expected totalBytes=1103253504, got %d", totalBytes)
+	}
+}
+
+func TestFlashStatusResponse_isTransferring_Nil(t *testing.T) {
+	status := &flashStatusResponse{
+		Transferring: nil,
+	}
+
+	inProgress, bytesWritten, totalBytes := status.isTransferring()
+	if inProgress {
+		t.Error("expected no transfer in progress")
+	}
+	if bytesWritten != 0 || totalBytes != 0 {
+		t.Error("expected zero values for nil Transferring")
+	}
+}
+
+func TestFlashStatusResponse_isTransferring_Empty(t *testing.T) {
+	status := &flashStatusResponse{
+		Transferring: []byte{},
+	}
+
+	inProgress, bytesWritten, totalBytes := status.isTransferring()
+	if inProgress {
+		t.Error("expected no transfer in progress for empty data")
+	}
+	if bytesWritten != 0 || totalBytes != 0 {
+		t.Error("expected zero values for empty Transferring")
+	}
+}
+
+func TestGetFlashStatus_TransferringNewFormat(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		// BMC firmware 2.0.5+ response format
+		response := `{"Transferring":{"id":395533509,"process_name":"Node 1 upgrade service","size":1103253504,"cancelled":false,"bytes_written":550000000}}`
+		_, _ = w.Write([]byte(response))
+	}))
+	defer server.Close()
+
+	status, err := getFlashStatus(server.URL, "test-token")
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	inProgress, bytesWritten, totalBytes := status.isTransferring()
+	if !inProgress {
+		t.Error("expected transfer in progress")
+	}
+	if bytesWritten != 550000000 {
+		t.Errorf("expected 550000000 bytes written, got %d", bytesWritten)
+	}
+	if totalBytes != 1103253504 {
+		t.Errorf("expected 1103253504 total bytes, got %d", totalBytes)
+	}
+}
+
+func TestGetFlashStatus_TransferringOldFormat(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		// Legacy BMC firmware response format
+		response := `{"Transferring":[550000000, 1103253504]}`
+		_, _ = w.Write([]byte(response))
+	}))
+	defer server.Close()
+
+	status, err := getFlashStatus(server.URL, "test-token")
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	inProgress, bytesWritten, totalBytes := status.isTransferring()
+	if !inProgress {
+		t.Error("expected transfer in progress")
+	}
+	if bytesWritten != 550000000 {
+		t.Errorf("expected 550000000 bytes written, got %d", bytesWritten)
+	}
+	if totalBytes != 1103253504 {
+		t.Errorf("expected 1103253504 total bytes, got %d", totalBytes)
+	}
+}
