@@ -3,11 +3,12 @@ module github.com/jfreed-dev/turingpi-terraform-provider
 go 1.25.0
 
 require (
+	github.com/hashicorp/terraform-plugin-log v0.10.0
 	github.com/hashicorp/terraform-plugin-sdk/v2 v2.38.1
 	github.com/mittwald/go-helm-client v0.12.19
 	golang.org/x/crypto v0.47.0
 	gopkg.in/yaml.v3 v3.0.1
-	helm.sh/helm/v3 v3.19.5
+	helm.sh/helm/v3 v3.20.0
 	k8s.io/client-go v0.35.0
 )
 
@@ -73,7 +74,6 @@ require (
 	github.com/hashicorp/hcl/v2 v2.24.0 // indirect
 	github.com/hashicorp/logutils v1.0.0 // indirect
 	github.com/hashicorp/terraform-plugin-go v0.29.0 // indirect
-	github.com/hashicorp/terraform-plugin-log v0.10.0 // indirect
 	github.com/hashicorp/terraform-registry-address v0.4.0 // indirect
 	github.com/hashicorp/terraform-svchost v0.2.0 // indirect
 	github.com/hashicorp/yamux v0.1.2 // indirect
