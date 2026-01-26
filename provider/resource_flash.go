@@ -71,7 +71,7 @@ type transferringStatus struct {
 // isTransferring checks if the flash status indicates a transfer is in progress
 // and returns progress info if available. Handles both old ([]int64) and new (object) formats.
 func (f *flashStatusResponse) isTransferring() (inProgress bool, bytesWritten, totalBytes int64) {
-	if f.Transferring == nil || len(f.Transferring) == 0 {
+	if len(f.Transferring) == 0 {
 		return false, 0, 0
 	}
 
